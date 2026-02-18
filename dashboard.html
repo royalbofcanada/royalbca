@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>RBC Royal Bank · Mobile Banking</title>
+  <!-- Font & icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    /* Light Mode (Default) */
+    body.light-mode {
+      background: #f2f5f9;
+    }
+
+    body.light-mode .app-container {
+      background: white;
+    }
+
+    body.light-mode .app-header {
+      background: linear-gradient(135deg, #0a2540 0%, #1a3a5f 100%);
+    }
+
+    body.light-mode .bottom-nav {
+      background: rgba(255,255,255,0.95);
+      border-top: 1px solid rgba(0,102,179,0.1);
+    }
+
+    body.light-mode .quick-actions {
+      background: white;
+    }
+
+    body.light-mode .quick-action-item span {
+      color: #1e3a5f;
+    }
+
+    body.light-mode .account-card {
+      background: linear-gradient(135deg, #ffffff, #f8fbff);
+      border: 1px solid rgba(0,102,179,0.1);
+    }
+
+    body.light-mode .account-name h4,
+    body.light-mode .account-balance,
+    body.light-mode .section-header h3,
+    body.light-mode .feature-card h4,
+    body.light-mode .transaction-details h4,
+    body.light-mode h2,
+    body.light-mode .menu-header h3,
+    body.light-mode .menu-item-title,
+    body.light-mode .notification-header h3,
+    body.light-mode .notification-item-title {
+      color: #0a2540;
+    }
+
+    body.light-mode .account-name p,
+    body.light-mode .account-number,
+    body.light-mode .section-header a,
+    body.light-mode .feature-card p,
+    body.light-mode .transaction-details p,
+    body.light-mode .transaction-status,
+    body.light-mode .menu-item-subtitle,
+    body.light-mode .notification-item-subtitle,
+    body.light-mode .notification-time {
+      color: #4f6f95;
+    }
+
+    body.light-mode .feature-card {
+      background: white;
+      border-color: #eef4fc;
+    }
+
+    body.light-mode .transaction-item {
+      border-bottom-color: #eef4fc;
+    }
+
+    body.light-mode .menu-panel,
+    body.light-mode .notification-panel {
+      background: white;
+    }
+
+    body.light-mode .menu-item {
+      border-bottom-color: #eef4fc;
+    }
+
+    body.light-mode .toggle-switch {
+      background: #e0e0e0;
+    }
+
+    /* Dark Mode - COMPLETELY FIXED */
+    body.dark-mode {
+      background: #121212;
+    }
+
+    body.dark-mode .app-container {
+      background: #1e1e1e;
+    }
+
+    body.dark-mode .app-header {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+    }
+
+    body.dark-mode .quick-actions {
+      background: #2d2d2d;
+    }
+
+    body.dark-mode .quick-action-icon {
+      background: #3d3d3d;
+      color: #66b0ff;
+    }
+
+    body.dark-mode .quick-action-item span {
+      color: #e0e0e0;
+    }
+
+    body.dark-mode .account-card {
+      background: #2d2d2d;
+      border-color: #404040;
+    }
+
+    /* ALL TEXT COLORS FOR DARK MODE - FIXED */
+    body.dark-mode .account-name h4,
+    body.dark-mode .account-balance,
+    body.dark-mode .section-header h3,
+    body.dark-mode .feature-card h4,
+    body.dark-mode .transaction-details h4,
+    body.dark-mode h2,
+    body.dark-mode .menu-header h3,
+    body.dark-mode .menu-item-title,
+    body.dark-mode .notification-header h3,
+    body.dark-mode .notification-item-title,
+    body.dark-mode .total-amount,
+    body.dark-mode .greeting-text h1,
+    body.dark-mode .greeting-text h2,
+    body.dark-mode .amount,
+    body.dark-mode .feature-card h4,
+    body.dark-mode .menu-item-title {
+      color: #ffffff !important;
+    }
+
+    body.dark-mode .account-name p,
+    body.dark-mode .account-number,
+    body.dark-mode .section-header a,
+    body.dark-mode .feature-card p,
+    body.dark-mode .transaction-details p,
+    body.dark-mode .transaction-status,
+    body.dark-mode .menu-item-subtitle,
+    body.dark-mode .notification-item-subtitle,
+    body.dark-mode .notification-time,
+    body.dark-mode .total-label,
+    body.dark-mode .quick-action-item span,
+    body.dark-mode .section-header a,
+    body.dark-mode .amount small {
+      color: #b0b0b0 !important;
+    }
+
+    body.dark-mode .feature-card {
+      background: #2d2d2d;
+      border-color: #404040;
+    }
+
+    body.dark-mode .transaction-item {
+      border-bottom-color: #404040;
+    }
+
+    body.dark-mode .bottom-nav {
+      background: rgba(30,30,30,0.95);
+      border-top: 1px solid #404040;
+    }
+
+    body.dark-mode .nav-item-bottom {
+      color: #b0b0b0;
+    }
+
+    body.dark-mode .nav-item-bottom.active {
+      color: #66b0ff;
+    }
+
+    body.dark-mode .menu-panel,
+    body.dark-mode .notification-panel {
+      background: #2d2d2d;
+    }
+
+    body.dark-mode .menu-item {
+      border-bottom-color: #404040;
+    }
+
+    body.dark-mode .toggle-switch {
+      background: #404040;
+    }
+
+    body.dark-mode .toggle-switch.active {
+      background: #0066b3;
+    }
+
+    body.dark-mode .close-menu,
+    body.dark-mode .close-notification {
+      background: #404040;
+      color: #66b0ff;
+    }
+
+    body.dark-mode .notification-icon {
+      background: rgba(255,255,255,0.1);
+    }
+
+    body.dark-mode .amount.positive {
+      color: #4ade80 !important;
+    }
+
+    body.dark-mode .amount.negative {
+      color: #f87171 !important;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    /* App Container */
+    .app-container {
+      width: 100%;
+      max-width: 450px;
+      position: relative;
+      height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      box-shadow: 0 0 40px rgba(0,0,0,0.1);
+      scroll-behavior: smooth;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .app-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Header */
+    .app-header {
+      padding: 30px 24px 30px;
+      color: white;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+      box-shadow: 0 10px 30px rgba(0,102,179,0.2);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .greeting {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #0066b3, #0095ff);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 600;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      cursor: pointer;
+      color: white;
+    }
+
+    .greeting-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .greeting-text h2 {
+      font-size: 16px;
+      font-weight: 400;
+      color: white !important;
+      opacity: 0.9;
+      margin: 0;
+      line-height: 1.3;
+    }
+
+    .greeting-text h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: white !important;
+      margin: 0;
+      line-height: 1.3;
+    }
+
+    /* REMOVED NOTIFICATION ICON AND BADGE STYLES */
+
+    /* Notification Panel - Keep but hidden since no bell to open it */
+    .notification-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      display: none;
+    }
+
+    .notification-overlay.active {
+      display: block;
+    }
+
+    .notification-panel {
+      position: fixed;
+      top: -100%;
+      left: 0;
+      right: 0;
+      max-width: 450px;
+      margin: 0 auto;
+      background: white;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+      padding: 30px 24px;
+      transition: top 0.3s ease;
+      z-index: 2001;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .notification-panel.active {
+      top: 0;
+    }
+
+    .notification-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .notification-header h3 {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .mark-all-read {
+      font-size: 14px;
+      color: #0066b3;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .close-notification {
+      width: 48px;
+      height: 48px;
+      background: #f0f7ff;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #0066b3;
+      cursor: pointer;
+    }
+
+    .notification-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid #eef4fc;
+      cursor: pointer;
+      opacity: 1;
+      transition: opacity 0.3s;
+    }
+
+    .notification-item.unread {
+      background: rgba(0,102,179,0.05);
+      margin: 0 -24px;
+      padding: 16px 24px;
+    }
+
+    .notification-item.unread .notification-item-title {
+      font-weight: 700;
+    }
+
+    .notification-item-icon {
+      width: 48px;
+      height: 48px;
+      background: #f0f7ff;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0066b3;
+      font-size: 22px;
+    }
+
+    .notification-item-content {
+      flex: 1;
+    }
+
+    .notification-item-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .notification-item-subtitle {
+      font-size: 13px;
+    }
+
+    .notification-time {
+      font-size: 12px;
+      color: #4f6f95;
+    }
+
+    .no-notifications {
+      text-align: center;
+      padding: 40px 20px;
+      color: #4f6f95;
+    }
+
+    /* Total Balance - CAD */
+    .total-balance {
+      margin-top: 20px;
+    }
+
+    .total-label {
+      font-size: 14px;
+      opacity: 0.8;
+      letter-spacing: 0.5px;
+      color: rgba(255,255,255,0.8);
+    }
+
+    .total-amount {
+      font-size: 40px;
+      font-weight: 800;
+      margin-top: 8px;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      color: white;
+    }
+
+    .total-amount small {
+      font-size: 18px;
+      font-weight: 400;
+      opacity: 0.7;
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* Quick Actions Row */
+    .quick-actions {
+      display: flex;
+      justify-content: space-around;
+      padding: 20px 24px;
+      margin: 20px 20px;
+      border-radius: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+
+    .quick-action-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .quick-action-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #f0f7ff, #e5f0ff);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0066b3;
+      font-size: 24px;
+      transition: all 0.3s;
+    }
+
+    .quick-action-item:hover .quick-action-icon {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,102,179,0.2);
+    }
+
+    .quick-action-item span {
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* Account Cards Section */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      margin-bottom: 16px;
+    }
+
+    .section-header h3 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .section-header a {
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .account-cards {
+      padding: 0 20px;
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-bottom: 24px;
+    }
+
+    .account-cards::-webkit-scrollbar {
+      display: none;
+    }
+
+    .account-card {
+      min-width: 280px;
+      border-radius: 28px;
+      padding: 20px;
+      box-shadow: 0 15px 30px rgba(0,53,102,0.08);
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+    }
+
+    .account-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .account-type {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .account-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #0066b3, #0095ff);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+    }
+
+    .account-name h4 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .account-name p {
+      font-size: 13px;
+      margin-top: 2px;
+    }
+
+    .account-balance {
+      font-size: 24px;
+      font-weight: 700;
+      margin-top: 12px;
+    }
+
+    .account-number {
+      font-size: 14px;
+      margin-top: 8px;
+      letter-spacing: 1px;
+    }
+
+    /* Features Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      padding: 0 24px;
+      margin: 32px 0;
+    }
+
+    .feature-card {
+      border-radius: 24px;
+      padding: 20px 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      border-color: #0066b3;
+      box-shadow: 0 15px 35px rgba(0,102,179,0.1);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #e6f0ff, #d9e9ff);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0066b3;
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+
+    .feature-card h4 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .feature-card p {
+      font-size: 13px;
+    }
+
+    /* Transactions List */
+    .transactions-list {
+      padding: 0 24px;
+      margin: 24px 0 100px;
+    }
+
+    .transaction-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px solid;
+    }
+
+    .transaction-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .transaction-icon {
+      width: 48px;
+      height: 48px;
+      background: #f0f7ff;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0066b3;
+      font-size: 20px;
+    }
+
+    .transaction-details h4 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .transaction-details p {
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .transaction-amount {
+      text-align: right;
+    }
+
+    .amount {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .amount.positive {
+      color: #006b47;
+    }
+
+    .amount.negative {
+      color: #b34a4a;
+    }
+
+    /* Sticky Bottom Navigation */
+    .bottom-nav {
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 20px 25px;
+      box-shadow: 0 -5px 30px rgba(0,0,0,0.05);
+      z-index: 1000;
+    }
+
+    .nav-item-bottom {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex: 1;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .nav-item-bottom i {
+      font-size: 22px;
+    }
+
+    .nav-item-bottom span {
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .nav-item-bottom.active {
+      color: #0066b3;
+    }
+
+    .nav-item-bottom.active i {
+      transform: translateY(-2px);
+    }
+
+    /* Menu Panel */
+    .menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      display: none;
+    }
+
+    .menu-overlay.active {
+      display: block;
+    }
+
+    .menu-panel {
+      position: fixed;
+      bottom: -100%;
+      left: 0;
+      right: 0;
+      max-width: 450px;
+      margin: 0 auto;
+      border-top-left-radius: 30px;
+      border-top-right-radius: 30px;
+      padding: 30px 24px;
+      transition: bottom 0.3s ease;
+      z-index: 2001;
+      box-shadow: 0 -10px 30px rgba(0,0,0,0.2);
+    }
+
+    .menu-panel.active {
+      bottom: 0;
+    }
+
+    .menu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .menu-header h3 {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .close-menu {
+      width: 48px;
+      height: 48px;
+      background: #f0f7ff;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #0066b3;
+      cursor: pointer;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid;
+      cursor: pointer;
+    }
+
+    .menu-item-icon {
+      width: 48px;
+      height: 48px;
+      background: #f0f7ff;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0066b3;
+      font-size: 22px;
+    }
+
+    .menu-item-content {
+      flex: 1;
+    }
+
+    .menu-item-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .menu-item-subtitle {
+      font-size: 13px;
+    }
+
+    /* Toggle Switch */
+    .toggle-switch {
+      width: 52px;
+      height: 28px;
+      border-radius: 34px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .toggle-switch.active {
+      background: #0066b3;
+    }
+
+    .toggle-slider {
+      width: 24px;
+      height: 24px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.3s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .toggle-switch.active .toggle-slider {
+      transform: translateX(24px);
+    }
+
+    /* Hidden Views */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Page Views */
+    .page-view {
+      min-height: 100vh;
+      padding-bottom: 100px;
+    }
+  </style>
+  <!-- Load data.js first -->
+  <script src="data.js"></script>
+</head>
+<body class="light-mode">
+  <div class="app-container">
+    <!-- REMOVED Notification Overlay and Panel - No bell to open them -->
+
+    <!-- Main Dashboard View -->
+    <div id="dashboardView" class="page-view">
+      <!-- Header -->
+      <div class="app-header">
+        <div class="header-top">
+          <div class="greeting">
+            <div class="avatar" onclick="window.location.href='profile.html'">C</div>
+            <div class="greeting-text">
+              <h2>Welcome back,</h2>
+              <h1>Carolyn</h1>
+            </div>
+          </div>
+          <!-- REMOVED notification icon completely -->
+        </div>
+        
+        <div class="total-balance">
+          <div class="total-label">Total Balance (CAD)</div>
+          <div class="total-amount">
+            $500,000.00 <small>CAD</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <div class="quick-action-item" onclick="window.location.href='transfer.html'">
+          <div class="quick-action-icon"><i class="fas fa-arrow-right"></i></div>
+          <span>Transfer</span>
+        </div>
+        <div class="quick-action-item" onclick="window.location.href='deposit.html'">
+          <div class="quick-action-icon"><i class="fas fa-arrow-down"></i></div>
+          <span>Deposit</span>
+        </div>
+        <div class="quick-action-item" onclick="window.location.href='bills.html'">
+          <div class="quick-action-icon"><i class="fas fa-file-invoice"></i></div>
+          <span>Pay Bills</span>
+        </div>
+        <div class="quick-action-item" onclick="window.location.href='zelle.html'">
+          <div class="quick-action-icon"><i class="fas fa-bolt"></i></div>
+          <span>Zelle®</span>
+        </div>
+      </div>
+
+      <!-- Account Cards -->
+      <div class="section-header">
+        <h3>Your Accounts</h3>
+        <a onclick="window.location.href='cards.html'">See all <i class="fas fa-chevron-right"></i></a>
+      </div>
+
+      <div class="account-cards" id="accountCards">
+        <!-- Account cards will be inserted via JS -->
+      </div>
+
+      <!-- Insights Preview -->
+      <div class="section-header">
+        <h3>Spending Insights</h3>
+        <a onclick="window.location.href='insights.html'">View <i class="fas fa-chevron-right"></i></a>
+      </div>
+
+      <!-- Features Grid -->
+      <div class="features-grid">
+        <div class="feature-card" onclick="window.location.href='cards.html'">
+          <div class="feature-icon"><i class="fas fa-credit-card"></i></div>
+          <h4>Cards</h4>
+          <p>Manage your cards</p>
+        </div>
+        <div class="feature-card" onclick="window.location.href='insights.html'">
+          <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+          <h4>Insights</h4>
+          <p>Spending analysis</p>
+        </div>
+      </div>
+
+      <!-- Recent Transactions -->
+      <div class="section-header">
+        <h3>Recent Activity</h3>
+        <a onclick="window.location.href='transactions.html'">View all <i class="fas fa-chevron-right"></i></a>
+      </div>
+
+      <div class="transactions-list" id="recentTransactions">
+        <!-- Transactions will be inserted via JS -->
+      </div>
+    </div>
+
+    <!-- Menu Overlay and Panel -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+    
+    <div class="menu-panel" id="menuPanel">
+      <div class="menu-header">
+        <h3>Menu</h3>
+        <div class="close-menu" id="closeMenu"><i class="fas fa-times"></i></div>
+      </div>
+
+      <!-- Profile -->
+      <div class="menu-item" onclick="window.location.href='profile.html'">
+        <div class="menu-item-icon"><i class="fas fa-user"></i></div>
+        <div class="menu-item-content">
+          <div class="menu-item-title">Profile</div>
+          <div class="menu-item-subtitle">View and edit your profile</div>
+        </div>
+      </div>
+
+      <!-- Account Settings -->
+      <div class="menu-item" onclick="window.location.href='settings.html'">
+        <div class="menu-item-icon"><i class="fas fa-cog"></i></div>
+        <div class="menu-item-content">
+          <div class="menu-item-title">Account Settings</div>
+          <div class="menu-item-subtitle">Security and preferences</div>
+        </div>
+      </div>
+
+      <!-- Help Center -->
+      <div class="menu-item" onclick="window.location.href='help.html'">
+        <div class="menu-item-icon"><i class="fas fa-question-circle"></i></div>
+        <div class="menu-item-content">
+          <div class="menu-item-title">Help Center</div>
+          <div class="menu-item-subtitle">FAQs and support</div>
+        </div>
+      </div>
+
+      <!-- Dark Mode Toggle -->
+      <div class="menu-item" id="darkModeToggle">
+        <div class="menu-item-icon"><i class="fas fa-moon"></i></div>
+        <div class="menu-item-content">
+          <div class="menu-item-title">Dark Mode</div>
+          <div class="menu-item-subtitle">Switch theme</div>
+        </div>
+        <div class="toggle-switch" id="darkModeSwitch">
+          <div class="toggle-slider"></div>
+        </div>
+      </div>
+
+      <!-- Currency Toggle (CAD/USD) -->
+      <div class="menu-item" id="currencyToggle">
+        <div class="menu-item-icon"><i class="fas fa-dollar-sign"></i></div>
+        <div class="menu-item-content">
+          <div class="menu-item-title">Currency</div>
+          <div class="menu-item-subtitle" id="currencyDisplay">CAD - Canadian Dollar</div>
+        </div>
+        <div class="toggle-switch" id="currencySwitch">
+          <div class="toggle-slider"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sticky Bottom Navigation -->
+    <div class="bottom-nav">
+      <a class="nav-item-bottom active" data-page="dashboard" href="dashboard.html">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </a>
+      <a class="nav-item-bottom" data-page="cards" href="cards.html">
+        <i class="fas fa-credit-card"></i>
+        <span>Cards</span>
+      </a>
+      <a class="nav-item-bottom" data-page="insights" href="insights.html">
+        <i class="fas fa-chart-line"></i>
+        <span>Insights</span>
+      </a>
+      <a class="nav-item-bottom" data-page="menu" id="menuButton" href="javascript:void(0);">
+        <i class="fas fa-bars"></i>
+        <span>Menu</span>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // Use data from window object (loaded from data.js)
+    const accounts = window.accounts;
+    const transactions = window.transactions;
+    let notifications = window.notifications;
+
+    // State
+    let currentCurrency = 'CAD';
+    let isDarkMode = false;
+
+    // Format currency
+    const formatCurrency = (num) => {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currentCurrency,
+        minimumFractionDigits: 2
+      }).format(num);
+    };
+
+    // Render Account Cards
+    function renderAccountCards() {
+      const container = document.getElementById('accountCards');
+      if (!container) return;
+      
+      let html = '';
+      
+      for (let [key, acc] of Object.entries(accounts)) {
+        html += `
+          <div class="account-card" onclick="window.location.href='cards.html'">
+            <div class="account-card-header">
+              <div class="account-type">
+                <div class="account-icon">${acc.icon}</div>
+                <div class="account-name">
+                  <h4>${acc.name}</h4>
+                  <p>${acc.number}</p>
+                </div>
+              </div>
+              <i class="fas fa-chevron-right" style="color: #0066b3;"></i>
+            </div>
+            <div class="account-balance">
+              ${formatCurrency(acc.balance)}
+            </div>
+          </div>
+        `;
+      }
+      
+      container.innerHTML = html;
+      
+      // Update total balance
+      const totalBalance = Object.values(accounts).reduce((sum, acc) => sum + acc.balance, 0);
+      const totalAmountElement = document.querySelector('.total-amount');
+      if (totalAmountElement) {
+        totalAmountElement.innerHTML = `${formatCurrency(totalBalance)} <small>${currentCurrency}</small>`;
+      }
+    }
+
+    // Render Recent Transactions
+    function renderRecentTransactions() {
+      const container = document.getElementById('recentTransactions');
+      if (!container) return;
+      
+      let html = '';
+      
+      transactions.forEach(t => {
+        html += `
+          <div class="transaction-item">
+            <div class="transaction-left">
+              <div class="transaction-icon" style="background: ${t.iconBg}">
+                <i class="${t.icon}" style="color: ${t.type === 'positive' ? '#006b47' : '#b34a4a'};"></i>
+              </div>
+              <div class="transaction-details">
+                <h4>${t.name}</h4>
+                <p>${t.date}</p>
+              </div>
+            </div>
+            <div class="transaction-amount">
+              <div class="amount ${t.type}">${t.type === 'positive' ? '+' : '-'}${formatCurrency(Math.abs(t.amount))}</div>
+            </div>
+          </div>
+        `;
+      });
+      
+      container.innerHTML = html;
+    }
+
+    // Menu Functions
+    function openMenu() {
+      document.getElementById('menuOverlay').classList.add('active');
+      document.getElementById('menuPanel').classList.add('active');
+    }
+
+    function closeMenu() {
+      document.getElementById('menuOverlay').classList.remove('active');
+      document.getElementById('menuPanel').classList.remove('active');
+    }
+
+    // Dark Mode Toggle
+    function toggleDarkMode() {
+      isDarkMode = !isDarkMode;
+      const body = document.body;
+      const darkSwitch = document.getElementById('darkModeSwitch');
+      
+      if (isDarkMode) {
+        body.classList.remove('light-mode');
+        body.classList.add('dark-mode');
+        darkSwitch.classList.add('active');
+      } else {
+        body.classList.remove('dark-mode');
+        body.classList.add('light-mode');
+        darkSwitch.classList.remove('active');
+      }
+    }
+
+    // Currency Toggle
+    function toggleCurrency() {
+      if (currentCurrency === 'CAD') {
+        currentCurrency = 'USD';
+        document.getElementById('currencyDisplay').textContent = 'USD - US Dollar';
+        document.getElementById('currencySwitch').classList.add('active');
+      } else {
+        currentCurrency = 'CAD';
+        document.getElementById('currencyDisplay').textContent = 'CAD - Canadian Dollar';
+        document.getElementById('currencySwitch').classList.remove('active');
+      }
+      
+      renderAccountCards();
+      renderRecentTransactions();
+      
+      const totalLabel = document.querySelector('.total-label');
+      if (totalLabel) {
+        totalLabel.innerHTML = `Total Balance (${currentCurrency})`;
+      }
+    }
+
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize
+      renderAccountCards();
+      renderRecentTransactions();
+      setActiveNav();
+
+      // Set up event listeners
+      const menuButton = document.getElementById('menuButton');
+      if (menuButton) {
+        menuButton.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openMenu();
+        });
+      }
+
+      const closeMenuBtn = document.getElementById('closeMenu');
+      if (closeMenuBtn) {
+        closeMenuBtn.addEventListener('click', closeMenu);
+      }
+
+      const menuOverlay = document.getElementById('menuOverlay');
+      if (menuOverlay) {
+        menuOverlay.addEventListener('click', closeMenu);
+      }
+
+      const darkModeToggle = document.getElementById('darkModeToggle');
+      if (darkModeToggle) {
+        darkModeToggle.addEventListener('click', (e) => {
+          if (!e.target.closest('.toggle-switch')) {
+            toggleDarkMode();
+          }
+        });
+      }
+
+      const darkModeSwitch = document.getElementById('darkModeSwitch');
+      if (darkModeSwitch) {
+        darkModeSwitch.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleDarkMode();
+        });
+      }
+
+      const currencyToggle = document.getElementById('currencyToggle');
+      if (currencyToggle) {
+        currencyToggle.addEventListener('click', (e) => {
+          if (!e.target.closest('.toggle-switch')) {
+            toggleCurrency();
+          }
+        });
+      }
+
+      const currencySwitch = document.getElementById('currencySwitch');
+      if (currencySwitch) {
+        currencySwitch.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleCurrency();
+        });
+      }
+    });
+
+    // Update active state based on current page
+    function setActiveNav() {
+      const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
+      
+      document.querySelectorAll('.nav-item-bottom').forEach(item => {
+        item.classList.remove('active');
+        const page = item.dataset.page;
+        
+        if ((page === 'dashboard' && currentPage === 'dashboard.html') ||
+            (page === 'cards' && currentPage === 'cards.html') ||
+            (page === 'insights' && currentPage === 'insights.html')) {
+          item.classList.add('active');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

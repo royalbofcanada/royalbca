@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>RBC Royal Bank · Zelle®</title>
+  <!-- Font & icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    /* Light Mode (Default) */
+    body.light-mode {
+      background: #f2f5f9;
+    }
+
+    body.light-mode .app-container {
+      background: white;
+    }
+
+    body.light-mode .app-header {
+      background: linear-gradient(135deg, #0a2540 0%, #1a3a5f 100%);
+    }
+
+    body.light-mode .bottom-nav {
+      background: rgba(255,255,255,0.95);
+      border-top: 1px solid rgba(0,102,179,0.1);
+    }
+
+    body.light-mode .quick-actions {
+      background: white;
+    }
+
+    body.light-mode .quick-action-item span {
+      color: #1e3a5f;
+    }
+
+    body.light-mode .account-card {
+      background: linear-gradient(135deg, #ffffff, #f8fbff);
+      border: 1px solid rgba(0,102,179,0.1);
+    }
+
+    body.light-mode .account-name h4,
+    body.light-mode .account-balance,
+    body.light-mode .section-header h3,
+    body.light-mode .feature-card h4,
+    body.light-mode .transaction-details h4,
+    body.light-mode h2,
+    body.light-mode .menu-header h3,
+    body.light-mode .menu-item-title,
+    body.light-mode .notification-header h3,
+    body.light-mode .notification-item-title {
+      color: #0a2540;
+    }
+
+    body.light-mode .account-name p,
+    body.light-mode .account-number,
+    body.light-mode .section-header a,
+    body.light-mode .feature-card p,
+    body.light-mode .transaction-details p,
+    body.light-mode .transaction-status,
+    body.light-mode .menu-item-subtitle,
+    body.light-mode .notification-item-subtitle,
+    body.light-mode .notification-time {
+      color: #4f6f95;
+    }
+
+    body.light-mode .feature-card {
+      background: white;
+      border-color: #eef4fc;
+    }
+
+    body.light-mode .transaction-item {
+      border-bottom-color: #eef4fc;
+    }
+
+    body.light-mode .menu-panel,
+    body.light-mode .notification-panel {
+      background: white;
+    }
+
+    body.light-mode .menu-item {
+      border-bottom-color: #eef4fc;
+    }
+
+    body.light-mode .toggle-switch {
+      background: #e0e0e0;
+    }
+
+    /* Dark Mode */
+    body.dark-mode {
+      background: #121212;
+    }
+
+    body.dark-mode .app-container {
+      background: #1e1e1e;
+    }
+
+    body.dark-mode .app-header {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+    }
+
+    body.dark-mode .quick-actions {
+      background: #2d2d2d;
+    }
+
+    body.dark-mode .quick-action-icon {
+      background: #3d3d3d;
+      color: #66b0ff;
+    }
+
+    body.dark-mode .quick-action-item span {
+      color: #e0e0e0;
+    }
+
+    body.dark-mode .account-card {
+      background: #2d2d2d;
+      border-color: #404040;
+    }
+
+    body.dark-mode .account-name h4,
+    body.dark-mode .account-balance,
+    body.dark-mode .section-header h3,
+    body.dark-mode .feature-card h4,
+    body.dark-mode .transaction-details h4,
+    body.dark-mode h2,
+    body.dark-mode .menu-header h3,
+    body.dark-mode .menu-item-title,
+    body.dark-mode .notification-header h3,
+    body.dark-mode .notification-item-title,
+    body.dark-mode .total-amount,
+    body.dark-mode .greeting-text h1,
+    body.dark-mode .greeting-text h2,
+    body.dark-mode .amount,
+    body.dark-mode .feature-card h4,
+    body.dark-mode .menu-item-title,
+    body.dark-mode .contact-name,
+    body.dark-mode .zelle-header h1,
+    body.dark-mode .zelle-header p {
+      color: #ffffff !important;
+    }
+
+    body.dark-mode .account-name p,
+    body.dark-mode .account-number,
+    body.dark-mode .section-header a,
+    body.dark-mode .feature-card p,
+    body.dark-mode .transaction-details p,
+    body.dark-mode .transaction-status,
+    body.dark-mode .menu-item-subtitle,
+    body.dark-mode .notification-item-subtitle,
+    body.dark-mode .notification-time,
+    body.dark-mode .total-label,
+    body.dark-mode .quick-action-item span,
+    body.dark-mode .section-header a,
+    body.dark-mode .amount small,
+    body.dark-mode .contact-info,
+    body.dark-mode .input-label,
+    body.dark-mode .recent-label,
+    body.dark-mode .zelle-balance small {
+      color: #b0b0b0 !important;
+    }
+
+    body.dark-mode .feature-card {
+      background: #2d2d2d;
+      border-color: #404040;
+    }
+
+    body.dark-mode .transaction-item {
+      border-bottom-color: #404040;
+    }
+
+    body.dark-mode .bottom-nav {
+      background: rgba(30,30,30,0.95);
+      border-top: 1px solid #404040;
+    }
+
+    body.dark-mode .nav-item-bottom {
+      color: #b0b0b0;
+    }
+
+    body.dark-mode .nav-item-bottom.active {
+      color: #66b0ff;
+    }
+
+    body.dark-mode .menu-panel,
+    body.dark-mode .notification-panel {
+      background: #2d2d2d;
+    }
+
+    body.dark-mode .menu-item {
+      border-bottom-color: #404040;
+    }
+
+    body.dark-mode .toggle-switch {
+      background: #404040;
+    }
+
+    body.dark-mode .toggle-switch.active {
+      background: #0066b3;
+    }
+
+    body.dark-mode .close-menu,
+    body.dark-mode .close-notification {
+      background: #404040;
+      color: #66b0ff;
+    }
+
+    body.dark-mode .amount.positive {
+      color: #4ade80 !important;
+    }
+
+    body.dark-mode .amount.negative {
+      color: #f87171 !important;
+    }
+
+    /* Zelle specific styles */
+    .zelle-header {
+      padding: 20px 24px 10px;
+    }
+
+    .zelle-header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .zelle-header h1 i {
+      color: #6c25f0;
+      font-size: 32px;
+    }
+
+    .zelle-header p {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    .zelle-balance-card {
+      background: linear-gradient(135deg, #6c25f0, #8a4fff);
+      margin: 16px 24px;
+      padding: 20px;
+      border-radius: 28px;
+      color: white;
+      box-shadow: 0 15px 30px rgba(108,37,240,0.2);
+    }
+
+    .zelle-balance-label {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-bottom: 4px;
+    }
+
+    .zelle-balance {
+      font-size: 32px;
+      font-weight: 700;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .zelle-balance small {
+      font-size: 16px;
+      opacity: 0.7;
+    }
+
+    .zelle-actions {
+      display: flex;
+      gap: 16px;
+      padding: 0 24px;
+      margin: 24px 0;
+    }
+
+    .zelle-action-btn {
+      flex: 1;
+      background: #f5f0ff;
+      border-radius: 20px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      border: none;
+      font-weight: 600;
+      color: #6c25f0;
+      transition: all 0.2s;
+    }
+
+    body.dark-mode .zelle-action-btn {
+      background: #3a2a5f;
+      color: #b794ff;
+    }
+
+    .zelle-action-btn i {
+      font-size: 24px;
+    }
+
+    .zelle-action-btn span {
+      font-size: 14px;
+    }
+
+    .zelle-action-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(108,37,240,0.15);
+    }
+
+    .send-money-form {
+      background: #f8faff;
+      margin: 20px 24px;
+      padding: 24px;
+      border-radius: 30px;
+    }
+
+    body.dark-mode .send-money-form {
+      background: #2a2a2a;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-label {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 16px 18px;
+      border: 1px solid #e0e7f0;
+      border-radius: 20px;
+      font-size: 16px;
+      background: white;
+    }
+
+    body.dark-mode .input-field {
+      background: #3d3d3d;
+      border-color: #555;
+      color: white;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: #6c25f0;
+    }
+
+    .contact-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px solid #eef4fc;
+      cursor: pointer;
+    }
+
+    body.dark-mode .contact-row {
+      border-bottom-color: #404040;
+    }
+
+    .contact-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .contact-avatar {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #6c25f0, #9f7aff);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    .contact-details {
+      flex: 1;
+    }
+
+    .contact-name {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .contact-info {
+      font-size: 13px;
+    }
+
+    .recent-label {
+      padding: 24px 24px 8px;
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    .send-money-btn {
+      background: #6c25f0;
+      color: white;
+      border: none;
+      width: 100%;
+      padding: 18px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 18px;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: background 0.2s;
+    }
+
+    .send-money-btn:hover {
+      background: #591fd0;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 450px;
+      position: relative;
+      height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      box-shadow: 0 0 40px rgba(0,0,0,0.1);
+      scroll-behavior: smooth;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .app-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .app-header {
+      padding: 20px 24px 20px;
+      color: white;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .greeting {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #0066b3, #0095ff);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 600;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      cursor: pointer;
+      color: white;
+    }
+
+    .greeting-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .greeting-text h2 {
+      font-size: 14px;
+      font-weight: 400;
+      opacity: 0.9;
+      margin: 0;
+    }
+
+    .greeting-text h1 {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .bottom-nav {
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 20px 25px;
+      box-shadow: 0 -5px 30px rgba(0,0,0,0.05);
+      z-index: 1000;
+    }
+
+    .nav-item-bottom {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      flex: 1;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .nav-item-bottom i {
+      font-size: 22px;
+    }
+
+    .nav-item-bottom span {
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .nav-item-bottom.active {
+      color: #6c25f0;
+    }
+
+    .back-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body class="light-mode">
+  <div class="app-container">
+    <!-- Simple header with back navigation (consistent with RBC style) -->
+    <div class="app-header" style="padding-bottom: 15px;">
+      <div class="header-top">
+        <a href="dashboard.html" class="back-link" style="color: white; font-size: 24px; margin-bottom: 0;">
+          <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="greeting">
+          <div class="avatar" onclick="window.location.href='profile.html'">C</div>
+          <div class="greeting-text">
+            <h2>Welcome back,</h2>
+            <h1>Carolyn</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Zelle® Header -->
+    <div class="zelle-header">
+      <h1><i class="fas fa-bolt"></i> Zelle®</h1>
+      <p>Fast, safe & easy money transfers</p>
+    </div>
+
+    <!-- Zelle Balance Card -->
+    <div class="zelle-balance-card">
+      <div class="zelle-balance-label">Zelle® balance</div>
+      <div class="zelle-balance">
+        $2,450.00 <small>CAD</small>
+      </div>
+      <div style="margin-top: 12px; font-size: 14px; opacity: 0.9;">
+        <i class="fas fa-clock"></i> Usually arrives in minutes
+      </div>
+    </div>
+
+    <!-- Zelle Quick Actions -->
+    <div class="zelle-actions">
+      <div class="zelle-action-btn" onclick="alert('Request money flow')">
+        <i class="fas fa-hand-holding-usd"></i>
+        <span>Request</span>
+      </div>
+      <div class="zelle-action-btn" onclick="alert('Split with friends')">
+        <i class="fas fa-users"></i>
+        <span>Split</span>
+      </div>
+      <div class="zelle-action-btn" onclick="alert('Add recipient')">
+        <i class="fas fa-user-plus"></i>
+        <span>Add</span>
+      </div>
+    </div>
+
+    <!-- Send money form -->
+    <div class="send-money-form">
+      <div style="font-weight: 700; font-size: 18px; margin-bottom: 20px;">Send money</div>
+      
+      <div class="input-group">
+        <div class="input-label">TO</div>
+        <div class="contact-row" style="padding-top: 0; border-bottom: none; padding-bottom: 8px;" onclick="alert('Choose recipient')">
+          <div class="contact-left">
+            <div class="contact-avatar">M</div>
+            <div class="contact-details">
+              <div class="contact-name">Michael Chen</div>
+              <div class="contact-info">michael.c@email.com · Recent</div>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right" style="color: #6c25f0;"></i>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">AMOUNT (CAD)</div>
+        <input class="input-field" type="number" placeholder="0.00" value="120.00">
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">FROM ACCOUNT</div>
+        <select class="input-field" style="appearance: none;">
+          <option>Chequing (•••• 4580) · $12,340.00</option>
+          <option>Savings (•••• 1122) · $45,670.00</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">NOTE (OPTIONAL)</div>
+        <input class="input-field" type="text" placeholder="Dinner, rent, etc." value="Dinner">
+      </div>
+
+      <button class="send-money-btn" onclick="alert('Transfer initiated')">
+        Send $120.00 with Zelle®
+      </button>
+    </div>
+
+    <!-- Recent Zelle Contacts -->
+    <div class="recent-label">Frequent recipients</div>
+    <div style="padding: 0 24px;">
+      <div class="contact-row" onclick="alert('Select Priya')">
+        <div class="contact-left">
+          <div class="contact-avatar" style="background: linear-gradient(135deg, #ff7b7b, #ff5252);">P</div>
+          <div class="contact-details">
+            <div class="contact-name">Priya Patel</div>
+            <div class="contact-info">priya.p@email.com</div>
+          </div>
+        </div>
+        <i class="fas fa-paper-plane" style="color: #6c25f0;"></i>
+      </div>
+      <div class="contact-row" onclick="alert('Select Alex')">
+        <div class="contact-left">
+          <div class="contact-avatar" style="background: linear-gradient(135deg, #36d1dc, #5b86e5);">A</div>
+          <div class="contact-details">
+            <div class="contact-name">Alex Thompson</div>
+            <div class="contact-info">alex.t@email.com</div>
+          </div>
+        </div>
+        <i class="fas fa-paper-plane" style="color: #6c25f0;"></i>
+      </div>
+      <div class="contact-row" onclick="alert('Select Sarah')">
+        <div class="contact-left">
+          <div class="contact-avatar" style="background: linear-gradient(135deg, #f7971e, #ffd200);">S</div>
+          <div class="contact-details">
+            <div class="contact-name">Sarah Wong</div>
+            <div class="contact-info">sarah.w@email.com</div>
+          </div>
+        </div>
+        <i class="fas fa-paper-plane" style="color: #6c25f0;"></i>
+      </div>
+    </div>
+
+    <!-- Recent Zelle transactions (compact) -->
+    <div class="recent-label" style="margin-top: 16px;">Recent Zelle activity</div>
+    <div style="padding: 0 24px 30px;">
+      <div class="transaction-item" style="border-bottom: none; padding: 12px 0;">
+        <div class="transaction-left">
+          <div class="transaction-icon" style="background: #f0e6ff;"><i class="fas fa-arrow-up" style="color:#b34a4a;"></i></div>
+          <div class="transaction-details">
+            <h4>To Michael Chen</h4>
+            <p>May 12 · Dinner</p>
+          </div>
+        </div>
+        <div class="transaction-amount">
+          <div class="amount negative">-$45.00</div>
+        </div>
+      </div>
+      <div class="transaction-item" style="border-bottom: none; padding: 12px 0;">
+        <div class="transaction-left">
+          <div class="transaction-icon" style="background: #e6f4e6;"><i class="fas fa-arrow-down" style="color:#006b47;"></i></div>
+          <div class="transaction-details">
+            <h4>From Jamie L.</h4>
+            <p>May 10 · Gift</p>
+          </div>
+        </div>
+        <div class="transaction-amount">
+          <div class="amount positive">+$30.00</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sticky Bottom Navigation (same as dashboard) -->
+    <div class="bottom-nav">
+      <a class="nav-item-bottom" data-page="dashboard" href="dashboard.html">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </a>
+      <a class="nav-item-bottom" data-page="cards" href="cards.html">
+        <i class="fas fa-credit-card"></i>
+        <span>Cards</span>
+      </a>
+      <a class="nav-item-bottom" data-page="insights" href="insights.html">
+        <i class="fas fa-chart-line"></i>
+        <span>Insights</span>
+      </a>
+      <a class="nav-item-bottom active" data-page="zelle" href="zelle.html">
+        <i class="fas fa-bolt"></i>
+        <span>Zelle®</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Simple script to keep dark mode consistent (if user switches from dashboard) -->
+  <script>
+    (function() {
+      // Apply dark mode if previously set (simple localStorage simulation)
+      const isDark = localStorage.getItem('rbc_dark_mode') === 'true';
+      if (isDark) {
+        document.body.classList.remove('light-mode');
+        document.body.classList.add('dark-mode');
+      }
+      
+      // Listen for dark mode changes from other pages (via storage event)
+      window.addEventListener('storage', function(e) {
+        if (e.key === 'rbc_dark_mode') {
+          if (e.newValue === 'true') {
+            document.body.classList.remove('light-mode');
+            document.body.classList.add('dark-mode');
+          } else {
+            document.body.classList.remove('dark-mode');
+            document.body.classList.add('light-mode');
+          }
+        }
+      });
+
+      // Optional: set active nav for zelle
+      document.querySelectorAll('.nav-item-bottom').forEach(item => {
+        if (item.dataset.page === 'zelle') {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

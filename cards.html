@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>RBC Royal Bank · Cards</title>
+  <!-- Font & icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    body {
+      background: #f2f5f9;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      transition: background-color 0.3s;
+    }
+
+    body.dark-mode {
+      background: #121212;
+    }
+
+    body.dark-mode .app-container {
+      background: #1e1e1e;
+    }
+
+    body.dark-mode .app-header {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+    }
+
+    body.dark-mode .page-title,
+    body.dark-mode .header-title,
+    body.dark-mode .card-holder,
+    body.dark-mode .card-balance-label,
+    body.dark-mode .card-balance,
+    body.dark-mode .section-title,
+    body.dark-mode .transaction-description,
+    body.dark-mode .transaction-date,
+    body.dark-mode .transaction-amount,
+    body.dark-mode .statement-period,
+    body.dark-mode .statement-amount,
+    body.dark-mode .action-card h4,
+    body.dark-mode .action-card p {
+      color: white;
+    }
+
+    body.dark-mode .card-expiry,
+    body.dark-mode .card-number {
+      color: rgba(255,255,255,0.7);
+    }
+
+    body.dark-mode .quick-action-icon {
+      background: #3d3d3d;
+      color: #66b0ff;
+    }
+
+    body.dark-mode .quick-action-item span {
+      color: #e0e0e0;
+    }
+
+    body.dark-mode .transaction-item {
+      border-bottom-color: #404040;
+    }
+
+    body.dark-mode .action-card {
+      background: #2d2d2d;
+      border-color: #404040;
+    }
+
+    body.dark-mode .action-card h4,
+    body.dark-mode .action-card p {
+      color: #e0e0e0;
+    }
+
+    body.dark-mode .bottom-nav {
+      background: rgba(30,30,30,0.95);
+      border-top-color: #404040;
+    }
+
+    body.dark-mode .nav-item-bottom {
+      color: #b0b0b0;
+    }
+
+    body.dark-mode .nav-item-bottom.active {
+      color: #66b0ff;
+    }
+
+    body.dark-mode .card-actions button {
+      background: #3d3d3d;
+      color: #66b0ff;
+    }
+
+    body.dark-mode .freeze-btn {
+      background: #3d3d3d;
+      color: #f87171;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 450px;
+      position: relative;
+      height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: white;
+      box-shadow: 0 0 40px rgba(0,0,0,0.1);
+      scroll-behavior: smooth;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .app-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Header */
+    .app-header {
+      background: linear-gradient(135deg, #0a2540 0%, #1a3a5f 100%);
+      padding: 20px 24px 30px;
+      color: white;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .header-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .header-right {
+      width: 40px;
+    }
+
+    .page-title {
+      font-size: 28px;
+      font-weight: 800;
+      margin-top: 10px;
+      color: white;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+      display: flex;
+      justify-content: space-around;
+      padding: 20px 24px;
+      margin: 20px 20px;
+      background: white;
+      border-radius: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+
+    body.dark-mode .quick-actions {
+      background: #2d2d2d;
+    }
+
+    .quick-action-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .quick-action-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #f0f7ff, #e5f0ff);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0066b3;
+      font-size: 24px;
+      transition: all 0.3s;
+    }
+
+    .quick-action-item:hover .quick-action-icon {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,102,179,0.2);
+    }
+
+    .quick-action-item span {
+      font-size: 12px;
+      font-weight: 600;
+      color: #1e3a5f;
+    }
+
+    /* Main Content */
+    .main-content {
+      padding: 0 24px 100px;
+    }
+
+    /* Section Title */
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0a2540;
+      margin: 24px 0 16px;
+    }
+
+    /* Credit Cards */
+    .cards-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .credit-card {
+      background: linear-gradient(135deg, #0a2540, #1e3a5f);
+      border-radius: 24px;
+      padding: 24px;
+      color: white;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s;
+    }
+
+    .credit-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .credit-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200px;
+      height: 200px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50%;
+    }
+
+    .card-chip {
+      width: 45px;
+      height: 35px;
+      background: linear-gradient(135deg, #ffd700, #ffb347);
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .card-number {
+      font-size: 20px;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+      font-family: monospace;
+    }
+
+    .card-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-holder {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .card-expiry {
+      font-size: 14px;
+    }
+
+    .card-balance {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .card-balance-label {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-bottom: 4px;
+    }
+
+    .card-balance-amount {
+      font-size: 24px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .credit-limit {
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .card-actions button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .view-btn {
+      background: rgba(255,255,255,0.2);
+      color: white;
+    }
+
+    .view-btn:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .freeze-btn {
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+
+    .freeze-btn:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .freeze-btn.frozen {
+      background: #ff4444;
+      color: white;
+    }
+
+    /* Card 2 - Different Color */
+    .credit-card.premium {
+      background: linear-gradient(135deg, #1a472a, #2d5a3a);
+    }
+
+    .credit-card.business {
+      background: linear-gradient(135deg, #4a2c2c, #6b3e3e);
+    }
+
+    /* Debit Card */
+    .debit-card {
+      background: linear-gradient(135deg, #0066b3, #0095ff);
+      border-radius: 24px;
+      padding: 24px;
+      color: white;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .debit-card .card-chip {
+      background: linear-gradient(135deg, #c0c0c0, #e0e0e0);
+    }
+
+    /* Recent Transactions */
+    .transactions-list {
+      margin: 16px 0 24px;
+    }
+
+    .transaction-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px solid #eef4fc;
+    }
+
+    body.dark-mode .transaction-item {
+      border-bottom-color: #404040;
+    }
+
+    .transaction-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .transaction-icon {
+      width: 48px;
+      height: 48px;
+      background: #f0f7ff;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0066b3;
+      font-size: 20px;
+    }
+
+    .transaction-details h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #0a2540;
+      margin-bottom: 4px;
+    }
+
+    .transaction-details p {
+      font-size: 13px;
+      color: #4f6f95;
+    }
+
+    .transaction-amount {
+      text-align: right;
+    }
+
+    .transaction-amount .amount {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0a2540;
+    }
+
+    .transaction-amount .amount.negative {
+      color: #b34a4a;
+    }
+
+    .transaction-amount .amount.positive {
+      color: #006b47;
+    }
+
+    /* Statements Section */
+    .statements-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .statement-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      background: #f8fbff;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    body.dark-mode .statement-item {
+      background: #2d2d2d;
+    }
+
+    .statement-item:hover {
+      background: #f0f7ff;
+    }
+
+    .statement-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .statement-icon {
+      width: 48px;
+      height: 48px;
+      background: white;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0066b3;
+      font-size: 20px;
+    }
+
+    .statement-info h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #0a2540;
+      margin-bottom: 4px;
+    }
+
+    .statement-info p {
+      font-size: 13px;
+      color: #4f6f95;
+    }
+
+    .statement-amount {
+      font-weight: 700;
+      color: #0a2540;
+    }
+
+    /* Action Cards */
+    .action-cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .action-card {
+      background: #f8fbff;
+      border-radius: 20px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    body.dark-mode .action-card {
+      background: #2d2d2d;
+    }
+
+    .action-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,102,179,0.1);
+    }
+
+    .action-icon {
+      width: 48px;
+      height: 48px;
+      background: white;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0066b3;
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+
+    .action-card h4 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0a2540;
+      margin-bottom: 4px;
+    }
+
+    .action-card p {
+      font-size: 13px;
+      color: #4f6f95;
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 20px 25px;
+      border-top: 1px solid rgba(0,102,179,0.1);
+      z-index: 1000;
+    }
+
+    .nav-item-bottom {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      flex: 1;
+      text-decoration: none;
+      color: #4f6f95;
+      transition: all 0.3s;
+    }
+
+    .nav-item-bottom i {
+      font-size: 22px;
+    }
+
+    .nav-item-bottom span {
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .nav-item-bottom.active {
+      color: #0066b3;
+    }
+
+    .nav-item-bottom.active i {
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <div class="app-header">
+      <div class="header-top">
+        <div class="back-btn" onclick="window.location.href='dashboard.html'">
+          <i class="fas fa-arrow-left"></i>
+        </div>
+        <div class="header-title">Cards</div>
+        <div class="header-right"></div>
+      </div>
+      <div class="page-title">My Cards</div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <div class="quick-action-item" onclick="window.location.href='transfer.html'">
+        <div class="quick-action-icon"><i class="fas fa-arrow-right"></i></div>
+        <span>Transfer</span>
+      </div>
+      <div class="quick-action-item" onclick="window.location.href='deposit.html'">
+        <div class="quick-action-icon"><i class="fas fa-arrow-down"></i></div>
+        <span>Deposit</span>
+      </div>
+      <div class="quick-action-item" onclick="window.location.href='bills.html'">
+        <div class="quick-action-icon"><i class="fas fa-file-invoice"></i></div>
+        <span>Pay Bills</span>
+      </div>
+      <div class="quick-action-item" onclick="window.location.href='zelle.html'">
+        <div class="quick-action-icon"><i class="fas fa-bolt"></i></div>
+        <span>Zelle®</span>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Credit Cards Section -->
+      <div class="section-title">Credit Cards</div>
+      <div class="cards-container">
+        <!-- RBC Avion Visa Infinite -->
+        <div class="credit-card" id="avionCard">
+          <div class="card-chip"></div>
+          <div class="card-number">**** **** **** 4582</div>
+          <div class="card-details">
+            <span class="card-holder">CAROLYN MATHEWS</span>
+            <span class="card-expiry">12/28</span>
+          </div>
+          <div class="card-balance">
+            <div class="card-balance-label">Current Balance</div>
+            <div class="card-balance-amount">
+              $2,450.00
+              <span class="credit-limit">/ $15,000</span>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="view-btn" onclick="viewCardDetails('avion')">View Details</button>
+            <button class="freeze-btn" id="freezeAvion" onclick="toggleFreeze('avion')">Freeze Card</button>
+          </div>
+        </div>
+
+        <!-- RBC Cash Back Mastercard -->
+        <div class="credit-card premium" id="cashbackCard">
+          <div class="card-chip"></div>
+          <div class="card-number">**** **** **** 7890</div>
+          <div class="card-details">
+            <span class="card-holder">CAROLYN MATHEWS</span>
+            <span class="card-expiry">09/27</span>
+          </div>
+          <div class="card-balance">
+            <div class="card-balance-label">Current Balance</div>
+            <div class="card-balance-amount">
+              $890.50
+              <span class="credit-limit">/ $8,000</span>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="view-btn" onclick="viewCardDetails('cashback')">View Details</button>
+            <button class="freeze-btn" id="freezeCashback" onclick="toggleFreeze('cashback')">Freeze Card</button>
+          </div>
+        </div>
+
+        <!-- RBC Business Card -->
+        <div class="credit-card business" id="businessCard">
+          <div class="card-chip"></div>
+          <div class="card-number">**** **** **** 1234</div>
+          <div class="card-details">
+            <span class="card-holder">CAROLYN MATHEWS</span>
+            <span class="card-expiry">03/26</span>
+          </div>
+          <div class="card-balance">
+            <div class="card-balance-label">Current Balance</div>
+            <div class="card-balance-amount">
+              $5,230.00
+              <span class="credit-limit">/ $25,000</span>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="view-btn" onclick="viewCardDetails('business')">View Details</button>
+            <button class="freeze-btn" id="freezeBusiness" onclick="toggleFreeze('business')">Freeze Card</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Debit Card Section -->
+      <div class="section-title">Debit Card</div>
+      <div class="cards-container">
+        <div class="debit-card" id="debitCard">
+          <div class="card-chip"></div>
+          <div class="card-number">**** **** **** 4582</div>
+          <div class="card-details">
+            <span class="card-holder">CAROLYN MATHEWS</span>
+            <span class="card-expiry">06/28</span>
+          </div>
+          <div class="card-balance">
+            <div class="card-balance-label">Available Balance</div>
+            <div class="card-balance-amount">
+              $8,450.00
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="view-btn" onclick="viewCardDetails('debit')">View Details</button>
+            <button class="freeze-btn" id="freezeDebit" onclick="toggleFreeze('debit')">Freeze Card</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Transactions -->
+      <div class="section-title">Recent Card Transactions</div>
+      <div class="transactions-list">
+        <div class="transaction-item">
+          <div class="transaction-left">
+            <div class="transaction-icon">
+              <i class="fas fa-shopping-cart"></i>
+            </div>
+            <div class="transaction-details">
+              <h4>Walmart Supercentre</h4>
+              <p>Avion Visa • Just now</p>
+            </div>
+          </div>
+          <div class="transaction-amount">
+            <div class="amount negative">-$89.45</div>
+          </div>
+        </div>
+
+        <div class="transaction-item">
+          <div class="transaction-left">
+            <div class="transaction-icon">
+              <i class="fas fa-utensils"></i>
+            </div>
+            <div class="transaction-details">
+              <h4>The Keg Steakhouse</h4>
+              <p>Cashback MC • 2 hours ago</p>
+            </div>
+          </div>
+          <div class="transaction-amount">
+            <div class="amount negative">-$145.30</div>
+          </div>
+        </div>
+
+        <div class="transaction-item">
+          <div class="transaction-left">
+            <div class="transaction-icon">
+              <i class="fas fa-gas-pump"></i>
+            </div>
+            <div class="transaction-details">
+              <h4>Esso</h4>
+              <p>Debit Card • 5 hours ago</p>
+            </div>
+          </div>
+          <div class="transaction-amount">
+            <div class="amount negative">-$65.00</div>
+          </div>
+        </div>
+
+        <div class="transaction-item">
+          <div class="transaction-left">
+            <div class="transaction-icon">
+              <i class="fas fa-film"></i>
+            </div>
+            <div class="transaction-details">
+              <h4>Cineplex</h4>
+              <p>Avion Visa • Yesterday</p>
+            </div>
+          </div>
+          <div class="transaction-amount">
+            <div class="amount negative">-$32.50</div>
+          </div>
+        </div>
+
+        <div class="transaction-item">
+          <div class="transaction-left">
+            <div class="transaction-icon">
+              <i class="fas fa-credit-card"></i>
+            </div>
+            <div class="transaction-details">
+              <h4>Payment Received</h4>
+              <p>Cashback MC • Yesterday</p>
+            </div>
+          </div>
+          <div class="transaction-amount">
+            <div class="amount positive">+$500.00</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Statements -->
+      <div class="section-title">Statements</div>
+      <div class="statements-list">
+        <div class="statement-item">
+          <div class="statement-left">
+            <div class="statement-icon">
+              <i class="fas fa-file-pdf"></i>
+            </div>
+            <div class="statement-info">
+              <h4>December 2024</h4>
+              <p>Avion Visa Infinite</p>
+            </div>
+          </div>
+          <div class="statement-amount">$2,450.00</div>
+        </div>
+
+        <div class="statement-item">
+          <div class="statement-left">
+            <div class="statement-icon">
+              <i class="fas fa-file-pdf"></i>
+            </div>
+            <div class="statement-info">
+              <h4>December 2024</h4>
+              <p>Cash Back Mastercard</p>
+            </div>
+          </div>
+          <div class="statement-amount">$890.50</div>
+        </div>
+
+        <div class="statement-item">
+          <div class="statement-left">
+            <div class="statement-icon">
+              <i class="fas fa-file-pdf"></i>
+            </div>
+            <div class="statement-info">
+              <h4>November 2024</h4>
+              <p>Business Card</p>
+            </div>
+          </div>
+          <div class="statement-amount">$5,230.00</div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="action-cards">
+        <div class="action-card" onclick="window.location.href='pay-card.html'">
+          <div class="action-icon">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+          <h4>Make Payment</h4>
+          <p>Pay your credit card bill</p>
+        </div>
+
+        <div class="action-card" onclick="window.location.href='rewards.html'">
+          <div class="action-icon">
+            <i class="fas fa-gift"></i>
+          </div>
+          <h4>Rewards</h4>
+          <p>View your rewards points</p>
+        </div>
+
+        <div class="action-card" onclick="window.location.href='increase-limit.html'">
+          <div class="action-icon">
+            <i class="fas fa-arrow-up"></i>
+          </div>
+          <h4>Increase Limit</h4>
+          <p>Request credit increase</p>
+        </div>
+
+        <div class="action-card" onclick="window.location.href='report-lost.html'">
+          <div class="action-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <h4>Report Lost</h4>
+          <p>Report lost or stolen card</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+      <a class="nav-item-bottom" data-page="dashboard" href="dashboard.html">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </a>
+      <a class="nav-item-bottom active" data-page="cards" href="cards.html">
+        <i class="fas fa-credit-card"></i>
+        <span>Cards</span>
+      </a>
+      <a class="nav-item-bottom" data-page="insights" href="insights.html">
+        <i class="fas fa-chart-line"></i>
+        <span>Insights</span>
+      </a>
+      <a class="nav-item-bottom" data-page="menu" href="javascript:void(0);" onclick="window.location.href='dashboard.html#menu'">
+        <i class="fas fa-bars"></i>
+        <span>Menu</span>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // Check for dark mode preference from dashboard
+    function checkDarkMode() {
+      const isDarkMode = localStorage.getItem('darkMode') === 'true';
+      if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+      } else {
+        document.body.classList.remove('dark-mode');
+      }
+    }
+
+    // Listen for dark mode changes
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'darkMode') {
+        checkDarkMode();
+      }
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      checkDarkMode();
+      setActiveNav();
+    });
+
+    // Set active navigation based on current page
+    function setActiveNav() {
+      const currentPage = window.location.pathname.split('/').pop() || 'cards.html';
+      
+      document.querySelectorAll('.nav-item-bottom').forEach(item => {
+        item.classList.remove('active');
+        const page = item.dataset.page;
+        
+        if ((page === 'dashboard' && currentPage === 'dashboard.html') ||
+            (page === 'cards' && currentPage === 'cards.html') ||
+            (page === 'insights' && currentPage === 'insights.html')) {
+          item.classList.add('active');
+        }
+      });
+    }
+
+    // Toggle freeze card
+    function toggleFreeze(cardId) {
+      const button = document.getElementById(`freeze${cardId.charAt(0).toUpperCase() + cardId.slice(1)}`);
+      const card = document.getElementById(cardId + 'Card');
+      
+      if (button.textContent === 'Freeze Card') {
+        button.textContent = 'Unfreeze Card';
+        button.classList.add('frozen');
+        card.style.opacity = '0.8';
+        showNotification(`${cardId.charAt(0).toUpperCase() + cardId.slice(1)} card has been frozen`);
+      } else {
+        button.textContent = 'Freeze Card';
+        button.classList.remove('frozen');
+        card.style.opacity = '1';
+        showNotification(`${cardId.charAt(0).toUpperCase() + cardId.slice(1)} card has been unfrozen`);
+      }
+    }
+
+    // View card details
+    function viewCardDetails(cardId) {
+      const cardNames = {
+        avion: 'RBC Avion Visa Infinite',
+        cashback: 'RBC Cash Back Mastercard',
+        business: 'RBC Business Card',
+        debit: 'RBC Debit Card'
+      };
+      
+      showNotification(`Viewing ${cardNames[cardId]} details`);
+    }
+
+    // Show notification (temporary)
+    function showNotification(message) {
+      // Create temporary notification element
+      const notification = document.createElement('div');
+      notification.style.position = 'fixed';
+      notification.style.top = '20px';
+      notification.style.left = '50%';
+      notification.style.transform = 'translateX(-50%)';
+      notification.style.backgroundColor = '#0066b3';
+      notification.style.color = 'white';
+      notification.style.padding = '12px 24px';
+      notification.style.borderRadius = '30px';
+      notification.style.zIndex = '9999';
+      notification.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+      notification.style.fontWeight = '500';
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 2000);
+    }
+
+    // Handle menu button click
+    document.addEventListener('DOMContentLoaded', function() {
+      const menuBtn = document.querySelector('[data-page="menu"]');
+      if (menuBtn) {
+        menuBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          // Try to trigger the menu in dashboard
+          if (window.opener && !window.opener.closed) {
+            window.opener.postMessage('openMenu', '*');
+          } else {
+            window.location.href = 'dashboard.html#menu';
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

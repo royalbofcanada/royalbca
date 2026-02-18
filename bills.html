@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>RBC Royal Bank · Pay Bills</title>
+  <!-- Font & icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    /* Light Mode (Default) */
+    body.light-mode {
+      background: #f2f5f9;
+    }
+
+    body.light-mode .app-container {
+      background: white;
+    }
+
+    body.light-mode .app-header {
+      background: linear-gradient(135deg, #0a2540 0%, #1a3a5f 100%);
+    }
+
+    body.light-mode .bottom-nav {
+      background: rgba(255,255,255,0.95);
+      border-top: 1px solid rgba(0,102,179,0.1);
+    }
+
+    body.light-mode .section-header h3,
+    body.light-mode h2,
+    body.light-mode .bill-payee-name,
+    body.light-mode .bill-amount,
+    body.light-mode .scheduled-title,
+    body.light-mode .payee-name,
+    body.light-mode .account-card-title {
+      color: #0a2540;
+    }
+
+    body.light-mode .section-header a,
+    body.light-mode .bill-date,
+    body.light-mode .payee-info,
+    body.light-mode .account-card-subtitle,
+    body.light-mode .scheduled-date,
+    body.light-mode .input-label,
+    body.light-mode .pay-bills-header p {
+      color: #4f6f95;
+    }
+
+    body.light-mode .bill-item,
+    body.light-mode .payee-item,
+    body.light-mode .scheduled-item {
+      background: white;
+      border-color: #eef4fc;
+    }
+
+    body.light-mode .payee-icon {
+      background: #f0f7ff;
+      color: #0066b3;
+    }
+
+    /* Dark Mode */
+    body.dark-mode {
+      background: #121212;
+    }
+
+    body.dark-mode .app-container {
+      background: #1e1e1e;
+    }
+
+    body.dark-mode .app-header {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+    }
+
+    body.dark-mode .bottom-nav {
+      background: rgba(30,30,30,0.95);
+      border-top: 1px solid #404040;
+    }
+
+    body.dark-mode .nav-item-bottom {
+      color: #b0b0b0;
+    }
+
+    body.dark-mode .nav-item-bottom.active {
+      color: #66b0ff;
+    }
+
+    body.dark-mode .section-header h3,
+    body.dark-mode h2,
+    body.dark-mode .bill-payee-name,
+    body.dark-mode .bill-amount,
+    body.dark-mode .scheduled-title,
+    body.dark-mode .payee-name,
+    body.dark-mode .account-card-title,
+    body.dark-mode .pay-bills-header h1,
+    body.dark-mode .greeting-text h1 {
+      color: #ffffff !important;
+    }
+
+    body.dark-mode .section-header a,
+    body.dark-mode .bill-date,
+    body.dark-mode .payee-info,
+    body.dark-mode .account-card-subtitle,
+    body.dark-mode .scheduled-date,
+    body.dark-mode .input-label,
+    body.dark-mode .pay-bills-header p,
+    body.dark-mode .greeting-text h2 {
+      color: #b0b0b0 !important;
+    }
+
+    body.dark-mode .bill-item,
+    body.dark-mode .payee-item,
+    body.dark-mode .scheduled-item {
+      background: #2d2d2d;
+      border-color: #404040;
+    }
+
+    body.dark-mode .payee-icon {
+      background: #3d3d3d;
+      color: #66b0ff;
+    }
+
+    body.dark-mode .input-field {
+      background: #3d3d3d;
+      border-color: #555;
+      color: white;
+    }
+
+    body.dark-mode .pay-bill-btn {
+      background: #0066b3;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 450px;
+      position: relative;
+      height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      box-shadow: 0 0 40px rgba(0,0,0,0.1);
+      scroll-behavior: smooth;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .app-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .app-header {
+      padding: 20px 24px 20px;
+      color: white;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .greeting {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #0066b3, #0095ff);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 600;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      cursor: pointer;
+      color: white;
+    }
+
+    .greeting-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .greeting-text h2 {
+      font-size: 14px;
+      font-weight: 400;
+      opacity: 0.9;
+      margin: 0;
+    }
+
+    .greeting-text h1 {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .back-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+
+    .pay-bills-header {
+      padding: 0 24px 20px;
+    }
+
+    .pay-bills-header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pay-bills-header p {
+      font-size: 14px;
+    }
+
+    /* Account selector card */
+    .account-selector {
+      margin: 8px 24px 24px;
+      padding: 16px 20px;
+      background: #f8fbff;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+
+    body.dark-mode .account-selector {
+      background: #2a2a2a;
+    }
+
+    .account-selector-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .account-icon-small {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #0066b3, #0095ff);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+    }
+
+    .account-selector-info h4 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .account-selector-info p {
+      font-size: 13px;
+      color: #4f6f95;
+    }
+
+    body.dark-mode .account-selector-info p {
+      color: #b0b0b0;
+    }
+
+    /* Section headers */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      margin-bottom: 16px;
+    }
+
+    .section-header h3 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .section-header a {
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Bills grid / list */
+    .bills-grid {
+      padding: 0 20px;
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-bottom: 24px;
+    }
+
+    .bills-grid::-webkit-scrollbar {
+      display: none;
+    }
+
+    .bill-item {
+      min-width: 160px;
+      border-radius: 24px;
+      padding: 20px 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+      cursor: pointer;
+    }
+
+    .bill-icon {
+      width: 48px;
+      height: 48px;
+      background: #f0f7ff;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0066b3;
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+
+    .bill-payee-name {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .bill-date {
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .bill-amount {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0066b3;
+    }
+
+    .bill-amount.due {
+      color: #b34a4a;
+    }
+
+    /* Payees list */
+    .payees-list {
+      padding: 0 24px;
+      margin-bottom: 30px;
+    }
+
+    .payee-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px solid;
+      cursor: pointer;
+    }
+
+    .payee-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .payee-icon {
+      width: 48px;
+      height: 48px;
+      background: #f0f7ff;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0066b3;
+      font-size: 20px;
+    }
+
+    .payee-details h4 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .payee-details p {
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    /* Scheduled payments */
+    .scheduled-list {
+      padding: 0 24px;
+      margin: 24px 0 30px;
+    }
+
+    .scheduled-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+      border: 1px solid;
+    }
+
+    .scheduled-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .scheduled-icon {
+      width: 44px;
+      height: 44px;
+      background: #f0f7ff;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0066b3;
+      font-size: 20px;
+    }
+
+    .scheduled-info h4 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .scheduled-date {
+      font-size: 13px;
+      margin-top: 2px;
+    }
+
+    .scheduled-amount {
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    /* New payment form */
+    .new-payment-form {
+      background: #f8faff;
+      margin: 16px 24px 24px;
+      padding: 24px;
+      border-radius: 30px;
+    }
+
+    body.dark-mode .new-payment-form {
+      background: #2a2a2a;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-label {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 16px 18px;
+      border: 1px solid #e0e7f0;
+      border-radius: 20px;
+      font-size: 16px;
+      background: white;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: #0066b3;
+    }
+
+    .pay-bill-btn {
+      background: #0066b3;
+      color: white;
+      border: none;
+      width: 100%;
+      padding: 18px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .pay-bill-btn:hover {
+      background: #004b8f;
+    }
+
+    .bottom-nav {
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 20px 25px;
+      box-shadow: 0 -5px 30px rgba(0,0,0,0.05);
+      z-index: 1000;
+    }
+
+    .nav-item-bottom {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      flex: 1;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .nav-item-bottom i {
+      font-size: 22px;
+    }
+
+    .nav-item-bottom span {
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .nav-item-bottom.active {
+      color: #0066b3;
+    }
+  </style>
+</head>
+<body class="light-mode">
+  <div class="app-container">
+    <!-- Header with back navigation -->
+    <div class="app-header">
+      <div class="header-top">
+        <a href="dashboard.html" class="back-link" style="color: white; font-size: 24px; margin-bottom: 0;">
+          <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="greeting">
+          <div class="avatar" onclick="window.location.href='profile.html'">C</div>
+          <div class="greeting-text">
+            <h2>Welcome back,</h2>
+            <h1>Carolyn</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page Title -->
+    <div class="pay-bills-header">
+      <h1><i class="fas fa-file-invoice" style="color: #0066b3;"></i> Pay Bills</h1>
+      <p>Schedule and manage your bill payments</p>
+    </div>
+
+    <!-- Selected account (similar to account card in dashboard) -->
+    <div class="account-selector" onclick="alert('Change account (demo)')">
+      <div class="account-selector-left">
+        <div class="account-icon-small"><i class="fas fa-dollar-sign"></i></div>
+        <div class="account-selector-info">
+          <h4>Chequing</h4>
+          <p>•••• 4580 · Balance $12,340.00 CAD</p>
+        </div>
+      </div>
+      <i class="fas fa-chevron-down" style="color: #0066b3;"></i>
+    </div>
+
+    <!-- Upcoming bills (horizontal scroll) -->
+    <div class="section-header">
+      <h3>Upcoming bills</h3>
+      <a onclick="alert('View all upcoming')">See all <i class="fas fa-chevron-right"></i></a>
+    </div>
+
+    <div class="bills-grid">
+      <div class="bill-item" onclick="alert('Pay Hydro bill')">
+        <div class="bill-icon"><i class="fas fa-bolt"></i></div>
+        <div class="bill-payee-name">Hydro One</div>
+        <div class="bill-date">Due May 25</div>
+        <div class="bill-amount due">$89.40</div>
+      </div>
+      <div class="bill-item" onclick="alert('Pay Internet bill')">
+        <div class="bill-icon"><i class="fas fa-wifi"></i></div>
+        <div class="bill-payee-name">Rogers</div>
+        <div class="bill-date">Due May 28</div>
+        <div class="bill-amount due">$120.00</div>
+      </div>
+      <div class="bill-item" onclick="alert('Pay Credit Card')">
+        <div class="bill-icon"><i class="fas fa-credit-card"></i></div>
+        <div class="bill-payee-name">RBC Visa</div>
+        <div class="bill-date">Due Jun 2</div>
+        <div class="bill-amount due">$450.75</div>
+      </div>
+    </div>
+
+    <!-- Quick pay to recent payees -->
+    <div class="section-header">
+      <h3>Recent payees</h3>
+      <a onclick="alert('Manage payees')">Manage <i class="fas fa-chevron-right"></i></a>
+    </div>
+
+    <div class="payees-list">
+      <div class="payee-item" onclick="alert('Pay Bell Canada')">
+        <div class="payee-left">
+          <div class="payee-icon"><i class="fas fa-phone"></i></div>
+          <div class="payee-details">
+            <h4>Bell Canada</h4>
+            <p>Account •••• 3312</p>
+          </div>
+        </div>
+        <i class="fas fa-chevron-right" style="color: #0066b3;"></i>
+      </div>
+      <div class="payee-item" onclick="alert('Pay Toronto Hydro')">
+        <div class="payee-left">
+          <div class="payee-icon"><i class="fas fa-bolt"></i></div>
+          <div class="payee-details">
+            <h4>Toronto Hydro</h4>
+            <p>Account •••• 8976</p>
+          </div>
+        </div>
+        <i class="fas fa-chevron-right" style="color: #0066b3;"></i>
+      </div>
+      <div class="payee-item" onclick="alert('Pay RBC Mastercard')">
+        <div class="payee-left">
+          <div class="payee-icon"><i class="fab fa-cc-mastercard"></i></div>
+          <div class="payee-details">
+            <h4>RBC Mastercard</h4>
+            <p>•••• 4580</p>
+          </div>
+        </div>
+        <i class="fas fa-chevron-right" style="color: #0066b3;"></i>
+      </div>
+    </div>
+
+    <!-- New payment form (simple demo) -->
+    <div class="new-payment-form">
+      <div style="font-weight: 700; font-size: 18px; margin-bottom: 20px;">Make a payment</div>
+      
+      <div class="input-group">
+        <div class="input-label">PAYEE</div>
+        <select class="input-field" style="appearance: none;">
+          <option>Bell Canada (•••• 3312)</option>
+          <option>Toronto Hydro (•••• 8976)</option>
+          <option>Rogers (•••• 4532)</option>
+          <option>Add new payee...</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">AMOUNT (CAD)</div>
+        <input class="input-field" type="number" placeholder="0.00" value="89.40">
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">DATE</div>
+        <input class="input-field" type="date" value="2026-02-20">
+      </div>
+
+      <button class="pay-bill-btn" onclick="alert('Payment scheduled')">Schedule payment</button>
+    </div>
+
+    <!-- Scheduled payments -->
+    <div class="section-header">
+      <h3>Scheduled payments</h3>
+      <a onclick="alert('View all scheduled')">View all <i class="fas fa-chevron-right"></i></a>
+    </div>
+
+    <div class="scheduled-list">
+      <div class="scheduled-item" onclick="alert('Modify payment')">
+        <div class="scheduled-left">
+          <div class="scheduled-icon"><i class="fas fa-bolt"></i></div>
+          <div class="scheduled-info">
+            <h4>Hydro One</h4>
+            <div class="scheduled-date">May 25, 2026</div>
+          </div>
+        </div>
+        <div class="scheduled-amount">$89.40</div>
+      </div>
+      <div class="scheduled-item" onclick="alert('Modify payment')">
+        <div class="scheduled-left">
+          <div class="scheduled-icon"><i class="fas fa-wifi"></i></div>
+          <div class="scheduled-info">
+            <h4>Rogers Internet</h4>
+            <div class="scheduled-date">May 28, 2026</div>
+          </div>
+        </div>
+        <div class="scheduled-amount">$120.00</div>
+      </div>
+    </div>
+
+    <!-- Sticky Bottom Navigation -->
+    <div class="bottom-nav">
+      <a class="nav-item-bottom" data-page="dashboard" href="dashboard.html">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </a>
+      <a class="nav-item-bottom" data-page="cards" href="cards.html">
+        <i class="fas fa-credit-card"></i>
+        <span>Cards</span>
+      </a>
+      <a class="nav-item-bottom" data-page="insights" href="insights.html">
+        <i class="fas fa-chart-line"></i>
+        <span>Insights</span>
+      </a>
+      <a class="nav-item-bottom active" data-page="bills" href="bills.html">
+        <i class="fas fa-file-invoice"></i>
+        <span>Bills</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Dark mode sync script (optional) -->
+  <script>
+    (function() {
+      // Check if dark mode was enabled on dashboard (simple localStorage flag)
+      const isDark = localStorage.getItem('rbc_dark_mode') === 'true';
+      if (isDark) {
+        document.body.classList.remove('light-mode');
+        document.body.classList.add('dark-mode');
+      }
+      
+      // Listen for dark mode changes from other tabs/pages
+      window.addEventListener('storage', function(e) {
+        if (e.key === 'rbc_dark_mode') {
+          if (e.newValue === 'true') {
+            document.body.classList.remove('light-mode');
+            document.body.classList.add('dark-mode');
+          } else {
+            document.body.classList.remove('dark-mode');
+            document.body.classList.add('light-mode');
+          }
+        }
+      });
+
+      // Set active nav for bills page
+      document.querySelectorAll('.nav-item-bottom').forEach(item => {
+        if (item.dataset.page === 'bills') {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

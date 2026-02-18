@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>RBC Royal Bank · Spending Insights</title>
+  <!-- Font & icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Chart.js for visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    body {
+      background: #f2f5f9;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      transition: background-color 0.3s;
+    }
+
+    body.dark-mode {
+      background: #121212;
+    }
+
+    body.dark-mode .app-container {
+      background: #1e1e1e;
+    }
+
+    body.dark-mode .app-header {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+    }
+
+    body.dark-mode .page-title,
+    body.dark-mode .header-title,
+    body.dark-mode .section-title,
+    body.dark-mode .metric-label,
+    body.dark-mode .metric-value,
+    body.dark-mode .category-name,
+    body.dark-mode .category-amount,
+    body.dark-mode .category-percent,
+    body.dark-mode .insight-text,
+    body.dark-mode .tip-title,
+    body.dark-mode .tip-description,
+    body.dark-mode .comparison-text,
+    body.dark-mode .transaction-description,
+    body.dark-mode .transaction-date,
+    body.dark-mode .transaction-amount,
+    body.dark-mode .budget-item-name,
+    body.dark-mode .budget-item-spent,
+    body.dark-mode .budget-item-limit {
+      color: white;
+    }
+
+    body.dark-mode .metric-card,
+    body.dark-mode .category-item,
+    body.dark-mode .insight-card,
+    body.dark-mode .tip-card,
+    body.dark-mode .budget-item,
+    body.dark-mode .period-selector,
+    body.dark-mode .comparison-card,
+    body.dark-mode .transaction-item {
+      background: #2d2d2d;
+      border-color: #404040;
+    }
+
+    body.dark-mode .bottom-nav {
+      background: rgba(30,30,30,0.95);
+      border-top-color: #404040;
+    }
+
+    body.dark-mode .nav-item-bottom {
+      color: #b0b0b0;
+    }
+
+    body.dark-mode .nav-item-bottom.active {
+      color: #66b0ff;
+    }
+
+    body.dark-mode .progress-bar-bg {
+      background: #404040;
+    }
+
+    body.dark-mode .period-btn {
+      background: #404040;
+      color: #b0b0b0;
+    }
+
+    body.dark-mode .period-btn.active {
+      background: #0066b3;
+      color: white;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 450px;
+      position: relative;
+      height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: white;
+      box-shadow: 0 0 40px rgba(0,0,0,0.1);
+      scroll-behavior: smooth;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .app-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Header */
+    .app-header {
+      background: linear-gradient(135deg, #0a2540 0%, #1a3a5f 100%);
+      padding: 20px 24px 30px;
+      color: white;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .header-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .header-right {
+      width: 40px;
+    }
+
+    .page-title {
+      font-size: 28px;
+      font-weight: 800;
+      margin-top: 10px;
+      color: white;
+    }
+
+    .date-range {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-top: 5px;
+    }
+
+    /* Main Content */
+    .main-content {
+      padding: 0 24px 100px;
+    }
+
+    /* Period Selector */
+    .period-selector {
+      display: flex;
+      gap: 8px;
+      margin: 20px 0;
+      background: #f8fbff;
+      padding: 6px;
+      border-radius: 16px;
+    }
+
+    .period-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: transparent;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+      color: #4f6f95;
+    }
+
+    .period-btn.active {
+      background: #0066b3;
+      color: white;
+    }
+
+    /* Metrics Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .metric-card {
+      background: #f8fbff;
+      border-radius: 20px;
+      padding: 20px;
+      transition: transform 0.3s;
+    }
+
+    .metric-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .metric-icon {
+      width: 48px;
+      height: 48px;
+      background: white;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0066b3;
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+
+    .metric-label {
+      font-size: 14px;
+      color: #4f6f95;
+      margin-bottom: 8px;
+    }
+
+    .metric-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #0a2540;
+    }
+
+    .metric-change {
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .metric-change.positive {
+      color: #006b47;
+    }
+
+    .metric-change.negative {
+      color: #b34a4a;
+    }
+
+    /* Chart Container */
+    .chart-container {
+      background: #f8fbff;
+      border-radius: 24px;
+      padding: 20px;
+      margin: 24px 0;
+      height: 250px;
+    }
+
+    /* Categories */
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0a2540;
+      margin: 24px 0 16px;
+    }
+
+    .categories-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .category-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px;
+      background: #f8fbff;
+      border-radius: 16px;
+    }
+
+    .category-icon {
+      width: 48px;
+      height: 48px;
+      background: white;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0066b3;
+      font-size: 20px;
+    }
+
+    .category-details {
+      flex: 1;
+    }
+
+    .category-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .category-name {
+      font-weight: 600;
+      color: #0a2540;
+    }
+
+    .category-amount {
+      font-weight: 600;
+      color: #0a2540;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: #eef4fc;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: #0066b3;
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+
+    .category-footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 12px;
+    }
+
+    .category-percent {
+      color: #4f6f95;
+    }
+
+    .category-trend {
+      color: #4f6f95;
+    }
+
+    .category-trend.up {
+      color: #b34a4a;
+    }
+
+    .category-trend.down {
+      color: #006b47;
+    }
+
+    /* Insights Cards */
+    .insights-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .insight-card {
+      background: #f8fbff;
+      border-radius: 20px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .insight-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,102,179,0.1);
+    }
+
+    .insight-icon {
+      width: 48px;
+      height: 48px;
+      background: white;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0066b3;
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+
+    .insight-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #0a2540;
+      margin-bottom: 8px;
+    }
+
+    .insight-text {
+      font-size: 14px;
+      color: #4f6f95;
+    }
+
+    /* Smart Tips */
+    .tips-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .tip-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: #f8fbff;
+      border-radius: 20px;
+      transition: all 0.3s;
+    }
+
+    .tip-card:hover {
+      transform: translateX(5px);
+    }
+
+    .tip-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #e6f0ff, #d9e9ff);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0066b3;
+      font-size: 24px;
+    }
+
+    .tip-content {
+      flex: 1;
+    }
+
+    .tip-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #0a2540;
+      margin-bottom: 4px;
+    }
+
+    .tip-description {
+      font-size: 13px;
+      color: #4f6f95;
+    }
+
+    /* Comparison Card */
+    .comparison-card {
+      background: #f8fbff;
+      border-radius: 20px;
+      padding: 20px;
+      margin: 24px 0;
+    }
+
+    .comparison-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .comparison-title {
+      font-weight: 600;
+      color: #0a2540;
+    }
+
+    .comparison-value {
+      font-weight: 700;
+      color: #0066b3;
+    }
+
+    .comparison-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .comparison-label {
+      font-size: 12px;
+      color: #4f6f95;
+      min-width: 60px;
+    }
+
+    .comparison-progress {
+      flex: 1;
+      height: 8px;
+      background: #eef4fc;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .comparison-fill {
+      height: 100%;
+      background: #0066b3;
+      border-radius: 4px;
+    }
+
+    .comparison-fill.you {
+      background: #0066b3;
+    }
+
+    .comparison-fill.average {
+      background: #b0b0b0;
+    }
+
+    .comparison-text {
+      font-size: 13px;
+      color: #4f6f95;
+      margin-top: 12px;
+    }
+
+    /* Budget Items */
+    .budget-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .budget-item {
+      padding: 16px;
+      background: #f8fbff;
+      border-radius: 16px;
+    }
+
+    .budget-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .budget-item-name {
+      font-weight: 600;
+      color: #0a2540;
+    }
+
+    .budget-item-spent {
+      font-weight: 600;
+      color: #0a2540;
+    }
+
+    .budget-progress {
+      height: 8px;
+      background: #eef4fc;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .budget-fill {
+      height: 100%;
+      background: #0066b3;
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+
+    .budget-fill.warning {
+      background: #ffa500;
+    }
+
+    .budget-fill.danger {
+      background: #b34a4a;
+    }
+
+    .budget-footer {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #4f6f95;
+    }
+
+    .budget-item-limit {
+      color: #4f6f95;
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 20px 25px;
+      border-top: 1px solid rgba(0,102,179,0.1);
+      z-index: 1000;
+    }
+
+    .nav-item-bottom {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      flex: 1;
+      text-decoration: none;
+      color: #4f6f95;
+      transition: all 0.3s;
+    }
+
+    .nav-item-bottom i {
+      font-size: 22px;
+    }
+
+    .nav-item-bottom span {
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .nav-item-bottom.active {
+      color: #0066b3;
+    }
+
+    .nav-item-bottom.active i {
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <div class="app-header">
+      <div class="header-top">
+        <div class="back-btn" onclick="window.location.href='dashboard.html'">
+          <i class="fas fa-arrow-left"></i>
+        </div>
+        <div class="header-title">Insights</div>
+        <div class="header-right"></div>
+      </div>
+      <div class="page-title">Spending Insights</div>
+      <div class="date-range" id="dateRange">December 1 - December 31, 2024</div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Period Selector -->
+      <div class="period-selector">
+        <button class="period-btn active" onclick="changePeriod('week')">Week</button>
+        <button class="period-btn" onclick="changePeriod('month')">Month</button>
+        <button class="period-btn" onclick="changePeriod('quarter')">Quarter</button>
+        <button class="period-btn" onclick="changePeriod('year')">Year</button>
+      </div>
+
+      <!-- Key Metrics -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-icon">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+          <div class="metric-label">Total Spent</div>
+          <div class="metric-value" id="totalSpent">$3,245.67</div>
+          <div class="metric-change positive">↓ 12% vs last month</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon">
+            <i class="fas fa-wallet"></i>
+          </div>
+          <div class="metric-label">Avg. Daily</div>
+          <div class="metric-value" id="avgDaily">$104.70</div>
+          <div class="metric-change negative">↑ 5% vs last month</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon">
+            <i class="fas fa-piggy-bank"></i>
+          </div>
+          <div class="metric-label">Saved</div>
+          <div class="metric-value" id="saved">$1,200.00</div>
+          <div class="metric-change positive">↑ 8% vs last month</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <div class="metric-label">Income</div>
+          <div class="metric-value" id="income">$5,000.00</div>
+          <div class="metric-change">No change</div>
+        </div>
+      </div>
+
+      <!-- Spending Chart -->
+      <div class="section-title">Spending Overview</div>
+      <div class="chart-container">
+        <canvas id="spendingChart"></canvas>
+      </div>
+
+      <!-- Top Categories -->
+      <div class="section-title">Top Spending Categories</div>
+      <div class="categories-list" id="categoriesList">
+        <!-- Will be populated by JS -->
+      </div>
+
+      <!-- Smart Insights -->
+      <div class="section-title">Smart Insights</div>
+      <div class="insights-grid">
+        <div class="insight-card" onclick="viewInsight('restaurants')">
+          <div class="insight-icon">
+            <i class="fas fa-utensils"></i>
+          </div>
+          <div class="insight-value">+23%</div>
+          <div class="insight-text">Restaurant spending increased this month</div>
+        </div>
+
+        <div class="insight-card" onclick="viewInsight('subscriptions')">
+          <div class="insight-icon">
+            <i class="fas fa-repeat"></i>
+          </div>
+          <div class="insight-value">$89.97</div>
+          <div class="insight-text">Monthly subscriptions total</div>
+        </div>
+
+        <div class="insight-card" onclick="viewInsight('savings')">
+          <div class="insight-icon">
+            <i class="fas fa-chart-pie"></i>
+          </div>
+          <div class="insight-value">24%</div>
+          <div class="insight-text">Savings rate this month</div>
+        </div>
+
+        <div class="insight-card" onclick="viewInsight('cashback')">
+          <div class="insight-icon">
+            <i class="fas fa-gift"></i>
+          </div>
+          <div class="insight-value">$45.20</div>
+          <div class="insight-text">Cashback earned</div>
+        </div>
+      </div>
+
+      <!-- Comparison with Peers -->
+      <div class="section-title">Compare with Peers</div>
+      <div class="comparison-card">
+        <div class="comparison-header">
+          <span class="comparison-title">Dining Out</span>
+          <span class="comparison-value" id="diningComparison">$450 vs $380</span>
+        </div>
+        <div class="comparison-bar">
+          <span class="comparison-label">You</span>
+          <div class="comparison-progress">
+            <div class="comparison-fill you" style="width: 75%" id="yourDiningBar"></div>
+          </div>
+        </div>
+        <div class="comparison-bar">
+          <span class="comparison-label">Average</span>
+          <div class="comparison-progress">
+            <div class="comparison-fill average" style="width: 63%" id="avgDiningBar"></div>
+          </div>
+        </div>
+        <div class="comparison-text">You spend 18% more than similar profiles</div>
+      </div>
+
+      <!-- Budget Tracking -->
+      <div class="section-title">Budget Tracking</div>
+      <div class="budget-list">
+        <div class="budget-item">
+          <div class="budget-header">
+            <span class="budget-item-name">Groceries</span>
+            <span class="budget-item-spent">$450 / $600</span>
+          </div>
+          <div class="budget-progress">
+            <div class="budget-fill" style="width: 75%"></div>
+          </div>
+          <div class="budget-footer">
+            <span>$150 remaining</span>
+            <span class="budget-item-limit">75% used</span>
+          </div>
+        </div>
+
+        <div class="budget-item">
+          <div class="budget-header">
+            <span class="budget-item-name">Entertainment</span>
+            <span class="budget-item-spent">$180 / $200</span>
+          </div>
+          <div class="budget-progress">
+            <div class="budget-fill warning" style="width: 90%"></div>
+          </div>
+          <div class="budget-footer">
+            <span>$20 remaining</span>
+            <span class="budget-item-limit">90% used</span>
+          </div>
+        </div>
+
+        <div class="budget-item">
+          <div class="budget-header">
+            <span class="budget-item-name">Shopping</span>
+            <span class="budget-item-spent">$280 / $300</span>
+          </div>
+          <div class="budget-progress">
+            <div class="budget-fill danger" style="width: 93%"></div>
+          </div>
+          <div class="budget-footer">
+            <span>$20 remaining</span>
+            <span class="budget-item-limit">93% used</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Smart Tips -->
+      <div class="section-title">Smart Tips</div>
+      <div class="tips-list">
+        <div class="tip-card">
+          <div class="tip-icon">
+            <i class="fas fa-lightbulb"></i>
+          </div>
+          <div class="tip-content">
+            <div class="tip-title">Save on subscriptions</div>
+            <div class="tip-description">You have 3 unused subscriptions. Cancel them to save $45/month.</div>
+          </div>
+        </div>
+
+        <div class="tip-card">
+          <div class="tip-icon">
+            <i class="fas fa-coffee"></i>
+          </div>
+          <div class="tip-content">
+            <div class="tip-title">Coffee spending</div>
+            <div class="tip-description">You spent $120 on coffee this month. Bringing coffee from home could save $80.</div>
+          </div>
+        </div>
+
+        <div class="tip-card">
+          <div class="tip-icon">
+            <i class="fas fa-credit-card"></i>
+          </div>
+          <div class="tip-content">
+            <div class="tip-title">Cashback opportunity</div>
+            <div class="tip-description">Use your Avion card for groceries to earn 3x points.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spending Patterns -->
+      <div class="section-title">Spending Patterns</div>
+      <div class="categories-list">
+        <div class="category-item">
+          <div class="category-icon">
+            <i class="fas fa-calendar"></i>
+          </div>
+          <div class="category-details">
+            <div class="category-header">
+              <span class="category-name">Weekend Spending</span>
+              <span class="category-amount">$1,245</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" style="width: 65%"></div>
+            </div>
+            <div class="category-footer">
+              <span class="category-percent">65% of weekly total</span>
+              <span class="category-trend up">↑ 12%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="category-item">
+          <div class="category-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="category-details">
+            <div class="category-header">
+              <span class="category-name">Evening Spending</span>
+              <span class="category-amount">$890</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" style="width: 45%"></div>
+            </div>
+            <div class="category-footer">
+              <span class="category-percent">45% of daily total</span>
+              <span class="category-trend down">↓ 5%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+      <a class="nav-item-bottom" data-page="dashboard" href="dashboard.html">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </a>
+      <a class="nav-item-bottom" data-page="cards" href="cards.html">
+        <i class="fas fa-credit-card"></i>
+        <span>Cards</span>
+      </a>
+      <a class="nav-item-bottom active" data-page="insights" href="insights.html">
+        <i class="fas fa-chart-line"></i>
+        <span>Insights</span>
+      </a>
+      <a class="nav-item-bottom" data-page="menu" href="javascript:void(0);" onclick="window.location.href='dashboard.html#menu'">
+        <i class="fas fa-bars"></i>
+        <span>Menu</span>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // Initialize chart
+    let spendingChart;
+
+    // Check for dark mode preference
+    function checkDarkMode() {
+      const isDarkMode = localStorage.getItem('darkMode') === 'true';
+      if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+      } else {
+        document.body.classList.remove('dark-mode');
+      }
+    }
+
+    // Listen for dark mode changes
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'darkMode') {
+        checkDarkMode();
+        updateChartTheme();
+      }
+    });
+
+    // Update chart colors based on theme
+    function updateChartTheme() {
+      const isDarkMode = document.body.classList.contains('dark-mode');
+      const textColor = isDarkMode ? '#ffffff' : '#0a2540';
+      const gridColor = isDarkMode ? '#404040' : '#eef4fc';
+
+      if (spendingChart) {
+        spendingChart.options.scales.x.grid.color = gridColor;
+        spendingChart.options.scales.y.grid.color = gridColor;
+        spendingChart.options.scales.x.ticks.color = textColor;
+        spendingChart.options.scales.y.ticks.color = textColor;
+        spendingChart.update();
+      }
+    }
+
+    // Initialize spending chart
+    function initSpendingChart() {
+      const ctx = document.getElementById('spendingChart').getContext('2d');
+      const isDarkMode = document.body.classList.contains('dark-mode');
+      const textColor = isDarkMode ? '#ffffff' : '#0a2540';
+      const gridColor = isDarkMode ? '#404040' : '#eef4fc';
+
+      spendingChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+          datasets: [{
+            label: 'Spending',
+            data: [780, 845, 920, 700],
+            borderColor: '#0066b3',
+            backgroundColor: 'rgba(0,102,179,0.1)',
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: '#0066b3',
+            pointBorderColor: 'white',
+            pointBorderWidth: 2,
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              backgroundColor: isDarkMode ? '#2d2d2d' : 'white',
+              titleColor: isDarkMode ? '#ffffff' : '#0a2540',
+              bodyColor: isDarkMode ? '#b0b0b0' : '#4f6f95',
+              borderColor: isDarkMode ? '#404040' : '#eef4fc',
+              borderWidth: 1
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: gridColor
+              },
+              ticks: {
+                color: textColor,
+                callback: function(value) {
+                  return '$' + value;
+                }
+              }
+            },
+            x: {
+              grid: {
+                color: gridColor
+              },
+              ticks: {
+                color: textColor
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Populate categories
+    function populateCategories() {
+      const categories = [
+        {
+          icon: 'fa-utensils',
+          name: 'Restaurants',
+          amount: 845.50,
+          percent: 26,
+          trend: 12,
+          trendUp: true,
+          color: '#0066b3'
+        },
+        {
+          icon: 'fa-cart-shopping',
+          name: 'Groceries',
+          amount: 567.25,
+          percent: 17,
+          trend: 5,
+          trendUp: false,
+          color: '#006b47'
+        },
+        {
+          icon: 'fa-tv',
+          name: 'Entertainment',
+          amount: 324.99,
+          percent: 10,
+          trend: 8,
+          trendUp: true,
+          color: '#b34a4a'
+        },
+        {
+          icon: 'fa-car',
+          name: 'Transportation',
+          amount: 289.50,
+          percent: 9,
+          trend: 3,
+          trendUp: false,
+          color: '#ffa500'
+        },
+        {
+          icon: 'fa-bag-shopping',
+          name: 'Shopping',
+          amount: 456.75,
+          percent: 14,
+          trend: 15,
+          trendUp: true,
+          color: '#9c27b0'
+        },
+        {
+          icon: 'fa-house',
+          name: 'Utilities',
+          amount: 324.50,
+          percent: 10,
+          trend: 2,
+          trendUp: true,
+          color: '#2196f3'
+        }
+      ];
+
+      const container = document.getElementById('categoriesList');
+      let html = '';
+
+      categories.forEach(cat => {
+        html += `
+          <div class="category-item">
+            <div class="category-icon" style="color: ${cat.color}">
+              <i class="fas ${cat.icon}"></i>
+            </div>
+            <div class="category-details">
+              <div class="category-header">
+                <span class="category-name">${cat.name}</span>
+                <span class="category-amount">$${cat.amount.toFixed(2)}</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width: ${cat.percent * 4}%; background: ${cat.color}"></div>
+              </div>
+              <div class="category-footer">
+                <span class="category-percent">${cat.percent}% of total</span>
+                <span class="category-trend ${cat.trendUp ? 'up' : 'down'}">
+                  ${cat.trendUp ? '↑' : '↓'} ${cat.trend}%
+                </span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // Change period
+    function changePeriod(period) {
+      // Update active button
+      document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      // Update date range
+      const dateRange = document.getElementById('dateRange');
+      const today = new Date();
+      
+      switch(period) {
+        case 'week':
+          dateRange.textContent = 'December 24 - December 30, 2024';
+          updateChartData('week');
+          break;
+        case 'month':
+          dateRange.textContent = 'December 1 - December 31, 2024';
+          updateChartData('month');
+          break;
+        case 'quarter':
+          dateRange.textContent = 'October 1 - December 31, 2024';
+          updateChartData('quarter');
+          break;
+        case 'year':
+          dateRange.textContent = 'January 1 - December 31, 2024';
+          updateChartData('year');
+          break;
+      }
+    }
+
+    // Update chart data based on period
+    function updateChartData(period) {
+      if (!spendingChart) return;
+
+      let data;
+      let labels;
+
+      switch(period) {
+        case 'week':
+          labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+          data = [95, 82, 110, 78, 145, 230, 185];
+          break;
+        case 'month':
+          labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+          data = [780, 845, 920, 700];
+          break;
+        case 'quarter':
+          labels = ['October', 'November', 'December'];
+          data = [3245, 3560, 3245];
+          break;
+        case 'year':
+          labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          data = [2800, 2650, 3100, 2950, 3300, 3450, 3800, 3650, 3400, 3245, 3560, 3245];
+          break;
+      }
+
+      spendingChart.data.labels = labels;
+      spendingChart.data.datasets[0].data = data;
+      spendingChart.update();
+    }
+
+    // View insight details
+    function viewInsight(insightType) {
+      const messages = {
+        restaurants: 'Your restaurant spending increased by 23% this month. Consider setting a dining budget.',
+        subscriptions: 'You have 4 active subscriptions totaling $89.97/month. Review unused ones to save money.',
+        savings: 'Great job! Your savings rate is 24%. You\'re on track to meet your savings goals.',
+        cashback: 'You\'ve earned $45.20 in cashback this month. Redeem it through the rewards portal.'
+      };
+
+      alert(messages[insightType]);
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      checkDarkMode();
+      initSpendingChart();
+      populateCategories();
+      setActiveNav();
+    });
+
+    // Set active navigation based on current page
+    function setActiveNav() {
+      const currentPage = window.location.pathname.split('/').pop() || 'insights.html';
+      
+      document.querySelectorAll('.nav-item-bottom').forEach(item => {
+        item.classList.remove('active');
+        const page = item.dataset.page;
+        
+        if ((page === 'dashboard' && currentPage === 'dashboard.html') ||
+            (page === 'cards' && currentPage === 'cards.html') ||
+            (page === 'insights' && currentPage === 'insights.html')) {
+          item.classList.add('active');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

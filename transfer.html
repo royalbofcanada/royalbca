@@ -1,0 +1,2170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>RBC Royal Bank · Transfer & Deposit</title>
+  <!-- Font & icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- jsPDF for PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    body {
+      background: #f2f5f9;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    /* App Container */
+    .app-container {
+      width: 100%;
+      max-width: 450px;
+      position: relative;
+      height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: white;
+      box-shadow: 0 0 40px rgba(0,0,0,0.1);
+    }
+
+    /* Header */
+    .app-header {
+      background: linear-gradient(135deg, #0a2540 0%, #1a3a5f 100%);
+      padding: 20px 24px 30px;
+      color: white;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .header-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .header-right {
+      width: 40px;
+    }
+
+    /* Account Selector */
+    .account-selector {
+      background: rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 16px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .account-selector-label {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-bottom: 8px;
+    }
+
+    .selected-account {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .account-icon-small {
+      width: 40px;
+      height: 40px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .account-info-small h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+    }
+
+    .account-info-small p {
+      font-size: 13px;
+      opacity: 0.8;
+      margin-top: 2px;
+      color: white;
+    }
+
+    .account-balance-small {
+      margin-left: auto;
+      font-weight: 700;
+      font-size: 18px;
+      color: white;
+    }
+
+    /* Main Content */
+    .main-content {
+      padding: 24px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      background: #f0f7ff;
+      padding: 6px;
+      border-radius: 16px;
+    }
+
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      color: #4f6f95;
+    }
+
+    .tab.active {
+      background: white;
+      color: #0066b3;
+      box-shadow: 0 4px 12px rgba(0,102,179,0.15);
+    }
+
+    /* Transfer Type Selector */
+    .transfer-type {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .transfer-type-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #eef4fc;
+      background: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      color: #4f6f95;
+    }
+
+    .transfer-type-btn.active {
+      background: #0066b3;
+      color: white;
+      border-color: #0066b3;
+    }
+
+    /* Form Groups */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #0a2540;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      padding: 16px;
+      border: 1px solid #eef4fc;
+      border-radius: 16px;
+      font-size: 16px;
+      outline: none;
+      transition: all 0.3s;
+      background: #f8fbff;
+    }
+
+    .form-input:focus, .form-select:focus {
+      border-color: #0066b3;
+      box-shadow: 0 0 0 3px rgba(0,102,179,0.1);
+    }
+
+    .amount-input-group {
+      position: relative;
+    }
+
+    .amount-input-group .currency-symbol {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      font-weight: 600;
+      color: #0a2540;
+    }
+
+    .amount-input-group .form-input {
+      padding-left: 40px;
+    }
+
+    /* Account Verification */
+    .account-verification {
+      background: #f0f7ff;
+      border-radius: 16px;
+      padding: 16px;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: slideIn 0.3s ease;
+      border: 1px solid #006b47;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .verification-icon {
+      width: 48px;
+      height: 48px;
+      background: #e6f7e6;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #006b47;
+      font-size: 24px;
+    }
+
+    .verification-details {
+      flex: 1;
+    }
+
+    .verification-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0a2540;
+      margin-bottom: 4px;
+    }
+
+    .verification-bank {
+      font-size: 14px;
+      color: #4f6f95;
+    }
+
+    .verification-badge {
+      background: #006b47;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .not-found {
+      background: #ffe8e8;
+      color: #b34a4a;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 14px;
+      margin-top: 8px;
+      border: 1px solid #ffcdcd;
+    }
+
+    .not-found i {
+      margin-right: 8px;
+    }
+
+    /* External Bank Form */
+    .external-bank-form {
+      display: none;
+    }
+
+    .external-bank-form.active {
+      display: block;
+    }
+
+    /* Quick Amounts */
+    .quick-amounts {
+      display: flex;
+      gap: 8px;
+      margin: 16px 0;
+      flex-wrap: wrap;
+    }
+
+    .quick-amount {
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: #f0f7ff;
+      color: #0066b3;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .quick-amount:hover {
+      background: #0066b3;
+      color: white;
+    }
+
+    /* Transfer Summary */
+    .transfer-summary {
+      background: #f8fbff;
+      border-radius: 20px;
+      padding: 20px;
+      margin: 24px 0;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      color: #4f6f95;
+    }
+
+    .summary-row.total {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #eef4fc;
+      color: #0a2540;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    /* Action Buttons */
+    .action-btn {
+      width: 100%;
+      padding: 18px;
+      border-radius: 20px;
+      border: none;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 12px;
+    }
+
+    .action-btn.primary {
+      background: #0066b3;
+      color: white;
+    }
+
+    .action-btn.primary:hover {
+      background: #005092;
+    }
+
+    .action-btn.secondary {
+      background: white;
+      color: #0066b3;
+      border: 2px solid #0066b3;
+    }
+
+    .action-btn.secondary:hover {
+      background: #f0f7ff;
+    }
+
+    .action-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* PIN Modal */
+    .pin-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      display: none;
+      backdrop-filter: blur(5px);
+    }
+
+    .pin-overlay.active {
+      display: block;
+    }
+
+    .pin-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 350px;
+      width: 90%;
+      background: white;
+      border-radius: 30px;
+      padding: 30px;
+      text-align: center;
+      z-index: 2001;
+      display: none;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+
+    .pin-modal.active {
+      display: block;
+    }
+
+    .pin-icon {
+      width: 80px;
+      height: 80px;
+      background: #f0f7ff;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 40px;
+      color: #0066b3;
+    }
+
+    .pin-modal h3 {
+      font-size: 24px;
+      color: #0a2540;
+      margin-bottom: 10px;
+    }
+
+    .pin-modal p {
+      color: #4f6f95;
+      margin-bottom: 20px;
+    }
+
+    .pin-input {
+      width: 100%;
+      padding: 16px;
+      border: 1px solid #eef4fc;
+      border-radius: 16px;
+      font-size: 20px;
+      text-align: center;
+      letter-spacing: 8px;
+      outline: none;
+      margin-bottom: 20px;
+    }
+
+    .pin-input:focus {
+      border-color: #0066b3;
+    }
+
+    .pin-error {
+      color: #b34a4a;
+      font-size: 14px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .pin-error.show {
+      display: block;
+    }
+
+    .pin-forgot {
+      color: #0066b3;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 16px;
+    }
+
+    /* Transfer Animation Modal */
+    .transfer-animation-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 2000;
+      display: none;
+      backdrop-filter: blur(5px);
+    }
+
+    .transfer-animation-overlay.active {
+      display: block;
+    }
+
+    .transfer-animation-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 350px;
+      width: 90%;
+      background: white;
+      border-radius: 30px;
+      padding: 40px 30px;
+      text-align: center;
+      z-index: 2001;
+      display: none;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+
+    .transfer-animation-modal.active {
+      display: block;
+    }
+
+    .animation-container {
+      margin-bottom: 30px;
+    }
+
+    .money-symbol {
+      font-size: 60px;
+      color: #0066b3;
+      margin-bottom: 20px;
+      animation: bounce 0.8s ease infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #f0f7ff;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #0066b3, #00a3ff);
+      border-radius: 4px;
+      animation: progress 2.5s ease forwards;
+    }
+
+    @keyframes progress {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+
+    .transfer-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      text-align: left;
+      margin: 20px 0;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: #f8fbff;
+      border-radius: 12px;
+      opacity: 0.5;
+      transition: all 0.3s;
+    }
+
+    .step.active {
+      opacity: 1;
+      background: #f0f7ff;
+      border-left: 4px solid #0066b3;
+    }
+
+    .step.completed {
+      opacity: 1;
+      background: #e6f7e6;
+    }
+
+    .step-icon {
+      width: 36px;
+      height: 36px;
+      background: white;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0066b3;
+    }
+
+    .step.completed .step-icon {
+      color: #006b47;
+    }
+
+    .step-info h4 {
+      font-size: 16px;
+      color: #0a2540;
+      margin-bottom: 4px;
+    }
+
+    .step-info p {
+      font-size: 12px;
+      color: #4f6f95;
+    }
+
+    /* Review Modal */
+    .review-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      display: none;
+      backdrop-filter: blur(5px);
+    }
+
+    .review-overlay.active {
+      display: block;
+    }
+
+    .review-modal {
+      position: fixed;
+      bottom: -100%;
+      left: 0;
+      right: 0;
+      max-width: 450px;
+      margin: 0 auto;
+      background: white;
+      border-top-left-radius: 30px;
+      border-top-right-radius: 30px;
+      padding: 30px 24px;
+      transition: bottom 0.3s ease;
+      z-index: 2001;
+      box-shadow: 0 -10px 30px rgba(0,0,0,0.2);
+    }
+
+    .review-modal.active {
+      bottom: 0;
+    }
+
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .review-header h3 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #0a2540;
+    }
+
+    .close-review {
+      width: 48px;
+      height: 48px;
+      background: #f0f7ff;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #0066b3;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .close-review:hover {
+      background: #e6f0ff;
+    }
+
+    .review-card {
+      background: #f8fbff;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .review-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #eef4fc;
+    }
+
+    .review-row:last-child {
+      border-bottom: none;
+    }
+
+    .review-label {
+      color: #4f6f95;
+      font-size: 14px;
+    }
+
+    .review-value {
+      font-weight: 700;
+      color: #0a2540;
+      font-size: 16px;
+      text-align: right;
+    }
+
+    .review-value.large {
+      font-size: 24px;
+      color: #0066b3;
+    }
+
+    .recipient-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 16px 0;
+      padding: 16px;
+      background: white;
+      border-radius: 16px;
+      border: 1px solid #eef4fc;
+    }
+
+    .recipient-avatar {
+      width: 50px;
+      height: 50px;
+      background: #0066b3;
+      border-radius: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .recipient-details h4 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0a2540;
+      margin-bottom: 4px;
+    }
+
+    .recipient-details p {
+      font-size: 14px;
+      color: #4f6f95;
+    }
+
+    .review-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .review-btn {
+      flex: 1;
+      padding: 16px;
+      border-radius: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+
+    .review-btn.confirm {
+      background: #0066b3;
+      color: white;
+    }
+
+    .review-btn.confirm:hover {
+      background: #005092;
+    }
+
+    .review-btn.cancel {
+      background: white;
+      color: #0066b3;
+      border: 2px solid #0066b3;
+    }
+
+    .review-btn.cancel:hover {
+      background: #f0f7ff;
+    }
+
+    /* Success Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      display: none;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-overlay.active {
+      display: block;
+    }
+
+    .success-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 380px;
+      width: 90%;
+      background: white;
+      border-radius: 30px;
+      padding: 30px;
+      text-align: center;
+      z-index: 2001;
+      display: none;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+
+    .success-modal.active {
+      display: block;
+    }
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: #e6f7e6;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 40px;
+      color: #006b47;
+    }
+
+    .success-modal h3 {
+      font-size: 24px;
+      color: #0a2540;
+      margin-bottom: 10px;
+    }
+
+    .success-modal p {
+      color: #4f6f95;
+      margin-bottom: 20px;
+    }
+
+    .receipt-preview {
+      background: #f8fbff;
+      border-radius: 16px;
+      padding: 20px;
+      margin: 20px 0;
+      text-align: left;
+    }
+
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .receipt-label {
+      color: #4f6f95;
+    }
+
+    .receipt-value {
+      font-weight: 600;
+      color: #0a2540;
+    }
+
+    .receipt-divider {
+      height: 1px;
+      background: #eef4fc;
+      margin: 15px 0;
+    }
+
+    .transaction-id {
+      background: #f8fbff;
+      padding: 12px;
+      border-radius: 12px;
+      font-family: monospace;
+      margin-bottom: 20px;
+      color: #0a2540;
+      font-weight: 600;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .modal-btn {
+      flex: 1;
+      padding: 16px;
+      border-radius: 16px;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .modal-btn.primary {
+      background: #0066b3;
+      color: white;
+    }
+
+    .modal-btn.primary:hover {
+      background: #005092;
+    }
+
+    .modal-btn.secondary {
+      background: white;
+      color: #0066b3;
+      border: 2px solid #0066b3;
+    }
+
+    .modal-btn.secondary:hover {
+      background: #f0f7ff;
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 20px 25px;
+      border-top: 1px solid rgba(0,102,179,0.1);
+      z-index: 1000;
+    }
+
+    .nav-item-bottom {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      flex: 1;
+      text-decoration: none;
+      color: #4f6f95;
+      transition: all 0.3s;
+    }
+
+    .nav-item-bottom i {
+      font-size: 22px;
+    }
+
+    .nav-item-bottom span {
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .nav-item-bottom.active {
+      color: #0066b3;
+    }
+
+    .nav-item-bottom.active i {
+      transform: translateY(-2px);
+    }
+
+    /* Error Message */
+    .error-message {
+      background: #ffe8e8;
+      color: #b34a4a;
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      display: none;
+      border: 1px solid #ffcdcd;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    /* Success Message */
+    .success-message {
+      background: #e6f7e6;
+      color: #006b47;
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      display: none;
+      border: 1px solid #b8e6b8;
+    }
+
+    .success-message.show {
+      display: block;
+    }
+
+    /* Loading Spinner */
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f0f7ff;
+      border-top: 3px solid #0066b3;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Readonly inputs */
+    .form-input[readonly] {
+      background: #f0f7ff;
+      color: #0a2540;
+      font-weight: 600;
+      cursor: not-allowed;
+    }
+  </style>
+  <!-- Load data.js first -->
+  <script src="data.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <div class="app-header">
+      <div class="header-top">
+        <div class="back-btn" onclick="window.location.href='dashboard.html'">
+          <i class="fas fa-arrow-left"></i>
+        </div>
+        <div class="header-title">Transfer & Deposit</div>
+        <div class="header-right"></div>
+      </div>
+
+      <!-- Account Selector -->
+      <div class="account-selector" id="accountSelector" onclick="toggleAccountDropdown()">
+        <div class="account-selector-label">From Account</div>
+        <div class="selected-account" id="selectedAccountDisplay">
+          <!-- Will be filled by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Tabs -->
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('transfer')" id="tabTransfer">Transfer</div>
+        <div class="tab" onclick="switchTab('deposit')" id="tabDeposit">Deposit</div>
+      </div>
+
+      <!-- Error/Success Messages -->
+      <div class="error-message" id="errorMessage"></div>
+      <div class="success-message" id="successMessage"></div>
+
+      <!-- Transfer Form -->
+      <div id="transferForm">
+        <!-- Transfer Type -->
+        <div class="transfer-type">
+          <div class="transfer-type-btn active" onclick="setTransferType('internal')" id="typeInternal">Internal</div>
+          <div class="transfer-type-btn" onclick="setTransferType('external')" id="typeExternal">External</div>
+        </div>
+
+        <!-- Internal Transfer Form -->
+        <div id="internalTransfer">
+          <div class="form-group">
+            <label class="form-label">To Account</label>
+            <select class="form-select" id="toAccount" onchange="updateSummary()">
+              <option value="">Select account</option>
+              <option value="checking">Primary Checking (•••• 4582)</option>
+              <option value="savings">High-Yield Savings (•••• 7890)</option>
+              <option value="investment">Investment Portfolio (•••• 1234)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- External Transfer Form -->
+        <div id="externalTransfer" class="external-bank-form">
+          <div class="form-group">
+            <label class="form-label">Select Bank</label>
+            <select class="form-select" id="bankSelect" onchange="handleBankSelect()">
+              <option value="">Choose a bank</option>
+              <option value="RBC">Royal Bank of Canada (RBC)</option>
+              <option value="TD" selected>Toronto-Dominion Bank (TD)</option>
+              <option value="BMO">Bank of Montreal (BMO)</option>
+              <option value="CIBC">Canadian Imperial Bank of Commerce (CIBC)</option>
+              <option value="Scotiabank">Bank of Nova Scotia (Scotiabank)</option>
+              <option value="National">National Bank of Canada</option>
+              <option value="HSBC">HSBC Canada</option>
+              <option value="Tangerine">Tangerine Bank</option>
+              <option value="Simplii">Simplii Financial</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Account Number</label>
+            <input type="text" class="form-input" id="accountNumber" placeholder="Enter account number" oninput="verifyAccount()">
+          </div>
+
+          <!-- Account Verification Result -->
+          <div id="verificationResult"></div>
+
+          <div class="form-group">
+            <label class="form-label">Institution Number</label>
+            <input type="text" class="form-input" id="institutionNumber" placeholder="003" value="004" readonly>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Transit Number</label>
+            <input type="text" class="form-input" id="transitNumber" placeholder="05962" value="05962" readonly>
+          </div>
+        </div>
+
+        <!-- Amount (Common for both) -->
+        <div class="form-group">
+          <label class="form-label">Amount (CAD)</label>
+          <div class="amount-input-group">
+            <span class="currency-symbol">$</span>
+            <input type="number" class="form-input" id="amount" placeholder="0.00" step="0.01" min="0.01" oninput="updateSummary()">
+          </div>
+        </div>
+
+        <!-- Quick Amounts -->
+        <div class="quick-amounts">
+          <span class="quick-amount" onclick="setAmount(100)">$100</span>
+          <span class="quick-amount" onclick="setAmount(500)">$500</span>
+          <span class="quick-amount" onclick="setAmount(1000)">$1,000</span>
+          <span class="quick-amount" onclick="setAmount(5000)">$5,000</span>
+          <span class="quick-amount" onclick="setAmount(10000)">$10,000</span>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label class="form-label">Description (Optional)</label>
+          <input type="text" class="form-input" id="description" placeholder="e.g., Rent payment">
+        </div>
+
+        <!-- Transfer Summary -->
+        <div class="transfer-summary" id="transferSummary">
+          <div class="summary-row">
+            <span>From:</span>
+            <span id="summaryFrom">Primary Checking</span>
+          </div>
+          <div class="summary-row">
+            <span>To:</span>
+            <span id="summaryTo">-</span>
+          </div>
+          <div class="summary-row">
+            <span>Amount:</span>
+            <span id="summaryAmount">$0.00</span>
+          </div>
+          <div class="summary-row total">
+            <span>New Balance:</span>
+            <span id="summaryNewBalance">$500,000.00</span>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <button class="action-btn primary" onclick="showReview()" id="processBtn">Review Transfer</button>
+        <button class="action-btn secondary" onclick="window.location.href='dashboard.html'">Cancel</button>
+      </div>
+
+      <!-- Deposit Form -->
+      <div id="depositForm" style="display: none;">
+        <div class="form-group">
+          <label class="form-label">Deposit To</label>
+          <select class="form-select" id="depositToAccount">
+            <option value="">Select account</option>
+            <option value="checking">Primary Checking (•••• 4582)</option>
+            <option value="savings">High-Yield Savings (•••• 7890)</option>
+            <option value="investment">Investment Portfolio (•••• 1234)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Deposit Type</label>
+          <select class="form-select" id="depositType">
+            <option value="cash">Cash Deposit</option>
+            <option value="cheque">Cheque Deposit</option>
+            <option value="etransfer">Interac e-Transfer</option>
+            <option value="wire">Wire Transfer</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Amount (CAD)</label>
+          <div class="amount-input-group">
+            <span class="currency-symbol">$</span>
+            <input type="number" class="form-input" id="depositAmount" placeholder="0.00" step="0.01" min="0.01" oninput="updateDepositSummary()">
+          </div>
+        </div>
+
+        <div class="quick-amounts">
+          <span class="quick-amount" onclick="setDepositAmount(100)">$100</span>
+          <span class="quick-amount" onclick="setDepositAmount(500)">$500</span>
+          <span class="quick-amount" onclick="setDepositAmount(1000)">$1,000</span>
+          <span class="quick-amount" onclick="setDepositAmount(5000)">$5,000</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description (Optional)</label>
+          <input type="text" class="form-input" id="depositDescription" placeholder="e.g., Birthday gift">
+        </div>
+
+        <!-- Deposit Summary -->
+        <div class="transfer-summary">
+          <div class="summary-row">
+            <span>Deposit to:</span>
+            <span id="depositSummaryTo">Primary Checking</span>
+          </div>
+          <div class="summary-row">
+            <span>Amount:</span>
+            <span id="depositSummaryAmount">$0.00</span>
+          </div>
+          <div class="summary-row total">
+            <span>New Balance:</span>
+            <span id="depositSummaryBalance">$500,000.00</span>
+          </div>
+        </div>
+
+        <button class="action-btn primary" onclick="processDeposit()">Deposit Money</button>
+        <button class="action-btn secondary" onclick="window.location.href='dashboard.html'">Cancel</button>
+      </div>
+    </div>
+
+    <!-- PIN Modal -->
+    <div class="pin-overlay" id="pinOverlay" onclick="closePinModal()"></div>
+    <div class="pin-modal" id="pinModal">
+      <div class="pin-icon">
+        <i class="fas fa-lock"></i>
+      </div>
+      <h3>Enter Transfer PIN</h3>
+      <p>Please enter your 4-digit PIN to authorize this transfer</p>
+      
+      <input type="password" class="pin-input" id="pinInput" maxlength="4" placeholder="••••" inputmode="numeric" pattern="[0-9]*" onkeypress="handlePinKeyPress(event)">
+      
+      <div class="pin-error" id="pinError">Incorrect PIN. Please try again.</div>
+      
+      <button class="action-btn primary" onclick="verifyPin()">Verify PIN</button>
+      <div class="pin-forgot" onclick="showPinHint()">Forgot PIN?</div>
+    </div>
+
+    <!-- Transfer Animation Modal -->
+    <div class="transfer-animation-overlay" id="transferAnimationOverlay"></div>
+    <div class="transfer-animation-modal" id="transferAnimationModal">
+      <div class="animation-container">
+        <div class="money-symbol">
+          <i class="fas fa-dollar-sign"></i>
+        </div>
+        <h3>Processing Transfer</h3>
+        <p>Please wait while we process your transaction</p>
+        
+        <div class="progress-bar">
+          <div class="progress-fill"></div>
+        </div>
+
+        <div class="transfer-steps" id="transferSteps">
+          <div class="step active" id="step1">
+            <div class="step-icon"><i class="fas fa-lock-open"></i></div>
+            <div class="step-info">
+              <h4>Verifying PIN</h4>
+              <p>Authorizing transaction...</p>
+            </div>
+          </div>
+          <div class="step" id="step2">
+            <div class="step-icon"><i class="fas fa-exchange-alt"></i></div>
+            <div class="step-info">
+              <h4>Processing Transfer</h4>
+              <p>Moving funds securely...</p>
+            </div>
+          </div>
+          <div class="step" id="step3">
+            <div class="step-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="step-info">
+              <h4>Finalizing</h4>
+              <p>Updating balances...</p>
+            </div>
+          </div>
+        </div>
+
+        <p id="animationStatus" style="color: #0066b3; font-weight: 600; margin-top: 20px;">Initializing...</p>
+      </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div class="review-overlay" id="reviewOverlay" onclick="closeReview()"></div>
+    <div class="review-modal" id="reviewModal">
+      <div class="review-header">
+        <h3>Review Transfer</h3>
+        <div class="close-review" onclick="closeReview()"><i class="fas fa-times"></i></div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-row">
+          <span class="review-label">From</span>
+          <span class="review-value" id="reviewFrom">Primary Checking</span>
+        </div>
+        <div class="review-row">
+          <span class="review-label">To</span>
+          <span class="review-value" id="reviewTo">-</span>
+        </div>
+        
+        <!-- Recipient Info -->
+        <div class="recipient-info" id="recipientInfo">
+          <!-- Will be filled by JS -->
+        </div>
+
+        <div class="review-row">
+          <span class="review-label">Amount</span>
+          <span class="review-value large" id="reviewAmount">$0.00</span>
+        </div>
+        <div class="review-row">
+          <span class="review-label">Description</span>
+          <span class="review-value" id="reviewDescription">-</span>
+        </div>
+        <div class="review-row">
+          <span class="review-label">Fee</span>
+          <span class="review-value" id="reviewFee">$0.00</span>
+        </div>
+        <div class="review-row">
+          <span class="review-label">Total</span>
+          <span class="review-value" id="reviewTotal">$0.00</span>
+        </div>
+        <div class="review-row">
+          <span class="review-label">New Balance</span>
+          <span class="review-value" id="reviewNewBalance">$500,000.00</span>
+        </div>
+      </div>
+
+      <div class="review-actions">
+        <button class="review-btn confirm" onclick="openPinModal()">Continue with PIN</button>
+        <button class="review-btn cancel" onclick="closeReview()">Edit</button>
+      </div>
+    </div>
+
+    <!-- Success Modal with Enhanced Receipt -->
+    <div class="modal-overlay" id="modalOverlay" onclick="event.stopPropagation()"></div>
+    <div class="success-modal" id="successModal">
+      <div class="success-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h3 id="modalTitle">Transfer Complete!</h3>
+      <p id="modalMessage">Your transfer has been processed successfully.</p>
+      
+      <!-- Enhanced Receipt Preview -->
+      <div class="receipt-preview" id="receiptPreview">
+        <div class="receipt-row">
+          <span class="receipt-label">Transaction ID:</span>
+          <span class="receipt-value" id="receiptTxnId">TXN-2024-001234</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-label">Date & Time:</span>
+          <span class="receipt-value" id="receiptDateTime">Just now</span>
+        </div>
+        <div class="receipt-divider"></div>
+        <div class="receipt-row">
+          <span class="receipt-label">From:</span>
+          <span class="receipt-value" id="receiptFrom">Primary Checking</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-label">To:</span>
+          <span class="receipt-value" id="receiptTo">Carolyn Mathews</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-label">Bank:</span>
+          <span class="receipt-value" id="receiptBank">TD Bank</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-label">Account:</span>
+          <span class="receipt-value" id="receiptAccount">****6541</span>
+        </div>
+        <div class="receipt-divider"></div>
+        <div class="receipt-row">
+          <span class="receipt-label">Amount:</span>
+          <span class="receipt-value" id="receiptAmount">$1,000.00</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-label">Fee:</span>
+          <span class="receipt-value" id="receiptFee">$1.00</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-label">Total:</span>
+          <span class="receipt-value" id="receiptTotal">$1,001.00</span>
+        </div>
+        <div class="receipt-divider"></div>
+        <div class="receipt-row">
+          <span class="receipt-label">Description:</span>
+          <span class="receipt-value" id="receiptDesc">Transfer</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-label">New Balance:</span>
+          <span class="receipt-value" id="receiptNewBalance">$498,999.00</span>
+        </div>
+      </div>
+      
+      <div class="transaction-id" id="transactionId">TXN-2024-001234</div>
+      
+      <div class="modal-actions">
+        <button class="modal-btn primary" onclick="downloadReceipt()">
+          <i class="fas fa-download"></i> Download Receipt
+        </button>
+        <button class="modal-btn secondary" onclick="closeModalAndReturn()">
+          <i class="fas fa-home"></i> Done
+        </button>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+      <a class="nav-item-bottom" data-page="dashboard" onclick="window.location.href='dashboard.html'">
+        <i class="fas fa-home"></i>
+        <span>Dashboard</span>
+      </a>
+      <a class="nav-item-bottom active" data-page="transfer" onclick="window.location.href='transfer.html'">
+        <i class="fas fa-arrow-right"></i>
+        <span>Transfer</span>
+      </a>
+      <a class="nav-item-bottom" data-page="cards" onclick="window.location.href='cards.html'">
+        <i class="fas fa-credit-card"></i>
+        <span>Cards</span>
+      </a>
+      <a class="nav-item-bottom" data-page="insights" onclick="window.location.href='insights.html'">
+        <i class="fas fa-chart-line"></i>
+        <span>Insights</span>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // Database of account holders
+    const accountDatabase = {
+      // TD Bank accounts
+      '6541763': {
+        name: 'Carolyn Mathews',
+        bank: 'TD Bank',
+        institution: '004',
+        transit: '05962'
+      },
+      '1234567': {
+        name: 'John Smith',
+        bank: 'RBC',
+        institution: '003',
+        transit: '12345'
+      },
+      '7654321': {
+        name: 'Sarah Johnson',
+        bank: 'BMO',
+        institution: '001',
+        transit: '67890'
+      }
+    };
+
+    // Transfer PIN (0901)
+    const TRANSFER_PIN = '0901';
+    
+    let currentAccount = 'checking';
+    let transferType = 'external';
+    let verifiedAccount = null;
+    let currentTransaction = null;
+    let animationInterval;
+
+    // Load accounts from window (from data.js)
+    const accounts = window.accounts;
+    let transactions = window.transactions;
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      updateAccountDisplay();
+      updateSummary();
+      updateDepositSummary();
+      setTransferType('external');
+      
+      // Update notification badge if function exists
+      if (typeof window.updateNotificationBadge === 'function') {
+        window.updateNotificationBadge();
+      }
+    });
+
+    // Handle PIN input keypress
+    function handlePinKeyPress(event) {
+      if (event.key === 'Enter') {
+        verifyPin();
+      }
+    }
+
+    // Update account display
+    function updateAccountDisplay() {
+      const account = accounts[currentAccount];
+      const display = document.getElementById('selectedAccountDisplay');
+      if (display && account) {
+        display.innerHTML = `
+          <div class="account-icon-small">${account.icon}</div>
+          <div class="account-info-small">
+            <h4>${account.name}</h4>
+            <p>${account.number}</p>
+          </div>
+          <div class="account-balance-small">$${account.balance.toLocaleString()}</div>
+          <i class="fas fa-chevron-down" style="margin-left: 8px; color: white;"></i>
+        `;
+      }
+    }
+
+    // Toggle account dropdown
+    function toggleAccountDropdown() {
+      const accounts_list = Object.keys(accounts);
+      const currentIndex = accounts_list.indexOf(currentAccount);
+      const nextIndex = (currentIndex + 1) % accounts_list.length;
+      currentAccount = accounts_list[nextIndex];
+      updateAccountDisplay();
+      updateSummary();
+    }
+
+    // Set transfer type
+    function setTransferType(type) {
+      transferType = type;
+      
+      document.getElementById('typeInternal').classList.remove('active');
+      document.getElementById('typeExternal').classList.remove('active');
+      document.getElementById(`type${type.charAt(0).toUpperCase() + type.slice(1)}`).classList.add('active');
+      
+      if (type === 'internal') {
+        document.getElementById('internalTransfer').style.display = 'block';
+        document.getElementById('externalTransfer').classList.remove('active');
+      } else {
+        document.getElementById('internalTransfer').style.display = 'none';
+        document.getElementById('externalTransfer').classList.add('active');
+      }
+      
+      updateSummary();
+    }
+
+    // Handle bank selection
+    function handleBankSelect() {
+      const bankSelect = document.getElementById('bankSelect');
+      const bankCodes = {
+        'RBC': '003',
+        'TD': '004',
+        'BMO': '001',
+        'CIBC': '010',
+        'Scotiabank': '002',
+        'National': '006',
+        'HSBC': '016',
+        'Tangerine': '614',
+        'Simplii': '307'
+      };
+      
+      const bankKey = bankSelect.value;
+      if (bankCodes[bankKey]) {
+        document.getElementById('institutionNumber').value = bankCodes[bankKey];
+      }
+      
+      document.getElementById('verificationResult').innerHTML = '';
+      verifiedAccount = null;
+      updateSummary();
+    }
+
+    // Verify account number
+    function verifyAccount() {
+      const accountNumber = document.getElementById('accountNumber').value.trim();
+      const bankSelect = document.getElementById('bankSelect');
+      const selectedBank = bankSelect.options[bankSelect.selectedIndex].text;
+      
+      const verificationDiv = document.getElementById('verificationResult');
+      
+      if (accountNumber.length < 4) {
+        verificationDiv.innerHTML = '';
+        verifiedAccount = null;
+        updateSummary();
+        return;
+      }
+      
+      verificationDiv.innerHTML = '<div style="display: flex; align-items: center; padding: 12px;"><div class="loading-spinner"></div> Verifying account...</div>';
+      
+      setTimeout(() => {
+        const accountInfo = accountDatabase[accountNumber];
+        
+        if (accountInfo) {
+          if (selectedBank.includes(accountInfo.bank) || selectedBank.includes(accountInfo.bank.split(' ')[0])) {
+            verifiedAccount = accountInfo;
+            verificationDiv.innerHTML = `
+              <div class="account-verification">
+                <div class="verification-icon">
+                  <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="verification-details">
+                  <div class="verification-name">${accountInfo.name}</div>
+                  <div class="verification-bank">${accountInfo.bank}</div>
+                </div>
+                <div class="verification-badge">Verified</div>
+              </div>
+            `;
+            
+            document.getElementById('description').placeholder = `e.g., Payment to ${accountInfo.name}`;
+          } else {
+            verificationDiv.innerHTML = `
+              <div class="not-found">
+                <i class="fas fa-exclamation-triangle"></i> Account exists but at ${accountInfo.bank}. Please select the correct bank.
+              </div>
+            `;
+            verifiedAccount = null;
+          }
+        } else {
+          verificationDiv.innerHTML = `
+            <div class="not-found">
+              <i class="fas fa-exclamation-circle"></i> Account not found. Please verify the account number.
+            </div>
+          `;
+          verifiedAccount = null;
+        }
+        
+        updateSummary();
+      }, 800);
+    }
+
+    // Set amount
+    function setAmount(amount) {
+      document.getElementById('amount').value = amount;
+      updateSummary();
+    }
+
+    // Set deposit amount
+    function setDepositAmount(amount) {
+      document.getElementById('depositAmount').value = amount;
+      updateDepositSummary();
+    }
+
+    // Update transfer summary
+    function updateSummary() {
+      const amount = parseFloat(document.getElementById('amount').value) || 0;
+      const account = accounts[currentAccount];
+      
+      if (!account) return;
+      
+      let toText = '-';
+      
+      if (transferType === 'internal') {
+        const toAccount = document.getElementById('toAccount').value;
+        if (toAccount && accounts[toAccount]) {
+          toText = accounts[toAccount].name;
+        }
+      } else {
+        if (verifiedAccount) {
+          toText = verifiedAccount.name;
+        } else {
+          const accountNumber = document.getElementById('accountNumber').value;
+          toText = accountNumber ? `Account ****${accountNumber.slice(-4)}` : 'External Account';
+        }
+      }
+      
+      document.getElementById('summaryTo').textContent = toText;
+      document.getElementById('summaryAmount').textContent = `$${amount.toFixed(2)}`;
+      
+      const fee = transferType === 'external' ? 1.00 : 0.00;
+      const total = amount + fee;
+      const newBalance = account.balance - total;
+      document.getElementById('summaryNewBalance').textContent = `$${newBalance.toFixed(2)}`;
+    }
+
+    // Update deposit summary
+    function updateDepositSummary() {
+      const amount = parseFloat(document.getElementById('depositAmount').value) || 0;
+      const toAccount = document.getElementById('depositToAccount').value || currentAccount;
+      const account = accounts[toAccount];
+      
+      if (account) {
+        document.getElementById('depositSummaryTo').textContent = account.name;
+        document.getElementById('depositSummaryAmount').textContent = `$${amount.toFixed(2)}`;
+        
+        const newBalance = account.balance + amount;
+        document.getElementById('depositSummaryBalance').textContent = `$${newBalance.toFixed(2)}`;
+      }
+    }
+
+    // Switch between transfer and deposit tabs
+    function switchTab(tab) {
+      document.getElementById('tabTransfer').classList.remove('active');
+      document.getElementById('tabDeposit').classList.remove('active');
+      document.getElementById(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.add('active');
+      
+      if (tab === 'transfer') {
+        document.getElementById('transferForm').style.display = 'block';
+        document.getElementById('depositForm').style.display = 'none';
+      } else {
+        document.getElementById('transferForm').style.display = 'none';
+        document.getElementById('depositForm').style.display = 'block';
+        updateDepositSummary();
+      }
+    }
+
+    // Show review modal
+    function showReview() {
+      const amount = parseFloat(document.getElementById('amount').value);
+      const description = document.getElementById('description').value || 'Transfer';
+      
+      if (!amount || amount <= 0) {
+        showError('Please enter a valid amount');
+        return;
+      }
+      
+      const account = accounts[currentAccount];
+      const fee = transferType === 'external' ? 1.00 : 0.00;
+      const total = amount + fee;
+      
+      if (total > account.balance) {
+        showError('Insufficient funds (including fee)');
+        return;
+      }
+      
+      if (transferType === 'internal') {
+        const toAccount = document.getElementById('toAccount').value;
+        if (!toAccount) {
+          showError('Please select a destination account');
+          return;
+        }
+        
+        document.getElementById('reviewFrom').textContent = account.name;
+        document.getElementById('reviewTo').textContent = accounts[toAccount].name;
+        document.getElementById('recipientInfo').innerHTML = `
+          <div class="recipient-avatar">${accounts[toAccount].icon}</div>
+          <div class="recipient-details">
+            <h4>${accounts[toAccount].name}</h4>
+            <p>${accounts[toAccount].number}</p>
+          </div>
+        `;
+      } else {
+        if (!verifiedAccount) {
+          showError('Please verify the account number first');
+          return;
+        }
+        
+        const accountNumber = document.getElementById('accountNumber').value;
+        const bankSelect = document.getElementById('bankSelect');
+        const bankName = bankSelect.options[bankSelect.selectedIndex].text;
+        
+        document.getElementById('reviewFrom').textContent = account.name;
+        document.getElementById('reviewTo').textContent = verifiedAccount.name;
+        document.getElementById('recipientInfo').innerHTML = `
+          <div class="recipient-avatar">${verifiedAccount.name.charAt(0)}</div>
+          <div class="recipient-details">
+            <h4>${verifiedAccount.name}</h4>
+            <p>${bankName} •••• ${accountNumber.slice(-4)}</p>
+          </div>
+        `;
+      }
+      
+      document.getElementById('reviewAmount').textContent = `$${amount.toFixed(2)}`;
+      document.getElementById('reviewDescription').textContent = description;
+      document.getElementById('reviewFee').textContent = `$${fee.toFixed(2)}`;
+      document.getElementById('reviewTotal').textContent = `$${total.toFixed(2)}`;
+      document.getElementById('reviewNewBalance').textContent = `$${(account.balance - total).toFixed(2)}`;
+      
+      document.getElementById('reviewOverlay').classList.add('active');
+      document.getElementById('reviewModal').classList.add('active');
+    }
+
+    // Close review modal
+    function closeReview() {
+      document.getElementById('reviewOverlay').classList.remove('active');
+      document.getElementById('reviewModal').classList.remove('active');
+    }
+
+    // Open PIN modal
+    function openPinModal() {
+      closeReview();
+      document.getElementById('pinOverlay').classList.add('active');
+      document.getElementById('pinModal').classList.add('active');
+      document.getElementById('pinInput').value = '';
+      document.getElementById('pinInput').focus();
+      document.getElementById('pinError').classList.remove('show');
+    }
+
+    // Close PIN modal
+    function closePinModal() {
+      document.getElementById('pinOverlay').classList.remove('active');
+      document.getElementById('pinModal').classList.remove('active');
+    }
+
+    // Show PIN hint
+    function showPinHint() {
+      alert('Your transfer PIN is: 0901');
+    }
+
+    // Verify PIN
+    function verifyPin() {
+      const enteredPin = document.getElementById('pinInput').value;
+      
+      if (enteredPin === TRANSFER_PIN) {
+        closePinModal();
+        showTransferAnimation();
+      } else {
+        document.getElementById('pinError').classList.add('show');
+        document.getElementById('pinInput').value = '';
+        document.getElementById('pinInput').focus();
+      }
+    }
+
+    // Show transfer animation
+    function showTransferAnimation() {
+      // Show animation modal
+      document.getElementById('transferAnimationOverlay').classList.add('active');
+      document.getElementById('transferAnimationModal').classList.add('active');
+      
+      // Reset steps
+      document.getElementById('step1').classList.add('active');
+      document.getElementById('step2').classList.remove('active', 'completed');
+      document.getElementById('step3').classList.remove('active', 'completed');
+      document.getElementById('animationStatus').textContent = 'Verifying PIN...';
+      
+      // Step 1: PIN Verification (1 second)
+      setTimeout(() => {
+        document.getElementById('step1').classList.remove('active');
+        document.getElementById('step1').classList.add('completed');
+        document.getElementById('step2').classList.add('active');
+        document.getElementById('animationStatus').textContent = 'Processing transfer...';
+      }, 1000);
+      
+      // Step 2: Processing Transfer (1 second)
+      setTimeout(() => {
+        document.getElementById('step2').classList.remove('active');
+        document.getElementById('step2').classList.add('completed');
+        document.getElementById('step3').classList.add('active');
+        document.getElementById('animationStatus').textContent = 'Finalizing transaction...';
+      }, 2000);
+      
+      // Step 3: Complete and show success (after 2.5 seconds)
+      setTimeout(() => {
+        document.getElementById('step3').classList.remove('active');
+        document.getElementById('step3').classList.add('completed');
+        document.getElementById('animationStatus').textContent = 'Transfer complete!';
+        
+        // Hide animation modal
+        document.getElementById('transferAnimationOverlay').classList.remove('active');
+        document.getElementById('transferAnimationModal').classList.remove('active');
+        
+        // Process the actual transfer
+        processTransfer();
+      }, 3000);
+    }
+
+    // Process transfer
+    function processTransfer() {
+      const amount = parseFloat(document.getElementById('amount').value);
+      const description = document.getElementById('description').value || 'Transfer';
+      const account = accounts[currentAccount];
+      const fee = transferType === 'external' ? 1.00 : 0.00;
+      const total = amount + fee;
+      
+      // Generate transaction ID
+      const transactionId = 'TXN-' + Date.now().toString().slice(-8) + '-' + Math.floor(Math.random() * 1000);
+      
+      if (transferType === 'internal') {
+        const toAccount = document.getElementById('toAccount').value;
+        
+        // Deduct from source
+        account.balance -= total;
+        
+        // Add to destination
+        accounts[toAccount].balance += amount;
+        
+        // Create transaction record using data.js function
+        if (typeof window.addTransaction === 'function') {
+          window.addTransaction({
+            name: description,
+            date: 'Just now',
+            amount: -total,
+            type: 'negative',
+            icon: 'fas fa-arrow-right',
+            iconBg: '#ffe8e8'
+          });
+          
+          // Add receiving transaction
+          window.addTransaction({
+            name: `Transfer from ${account.name}`,
+            date: 'Just now',
+            amount: amount,
+            type: 'positive',
+            icon: 'fas fa-arrow-left',
+            iconBg: '#e6f7e6'
+          });
+        }
+        
+        // Store transaction for receipt
+        currentTransaction = {
+          id: transactionId,
+          fromAccount: { ...account },
+          toAccount: { ...accounts[toAccount] },
+          amount: amount,
+          fee: fee,
+          total: total,
+          description: description,
+          date: new Date(),
+          type: 'internal',
+          bank: 'RBC Internal',
+          accountNumber: accounts[toAccount].number
+        };
+      } else {
+        // External transfer
+        account.balance -= total;
+        
+        // Create transaction record using data.js function
+        if (typeof window.addTransaction === 'function') {
+          window.addTransaction({
+            name: description,
+            date: 'Just now',
+            amount: -total,
+            type: 'negative',
+            icon: 'fas fa-arrow-right',
+            iconBg: '#ffe8e8'
+          });
+        }
+        
+        // Add notification using data.js function
+        if (typeof window.addNotification === 'function') {
+          window.addNotification({
+            title: 'External Transfer Completed',
+            subtitle: `$${amount.toFixed(2)} transferred to ${verifiedAccount.name}`,
+            time: 'Just now',
+            icon: 'fas fa-exchange-alt',
+            read: false
+          });
+        }
+        
+        // Store transaction for receipt
+        currentTransaction = {
+          id: transactionId,
+          fromAccount: { ...account },
+          toAccount: { ...verifiedAccount },
+          amount: amount,
+          fee: fee,
+          total: total,
+          description: description,
+          date: new Date(),
+          bank: document.getElementById('bankSelect').options[document.getElementById('bankSelect').selectedIndex].text,
+          accountNumber: document.getElementById('accountNumber').value,
+          type: 'external'
+        };
+      }
+      
+      // Save data to localStorage
+      if (typeof window.saveData === 'function') {
+        window.saveData();
+      }
+      
+      // Update transaction reference
+      window.transactions = window.transactions || [];
+      
+      // Update receipt preview with all details
+      updateReceiptPreview(currentTransaction);
+      
+      // Show success modal with receipt option
+      document.getElementById('modalOverlay').classList.add('active');
+      document.getElementById('successModal').classList.add('active');
+      document.getElementById('transactionId').textContent = transactionId;
+      document.getElementById('modalMessage').innerHTML = `$${amount.toFixed(2)} transferred to ${transferType === 'internal' ? accounts[document.getElementById('toAccount').value].name : verifiedAccount.name}`;
+      
+      // Clear form
+      document.getElementById('amount').value = '';
+      document.getElementById('description').value = '';
+      document.getElementById('accountNumber').value = '';
+      document.getElementById('verificationResult').innerHTML = '';
+      verifiedAccount = null;
+      
+      // Update displays
+      updateAccountDisplay();
+      updateSummary();
+      
+      // Update notification badge
+      if (typeof window.updateNotificationBadge === 'function') {
+        window.updateNotificationBadge();
+      }
+    }
+
+    // Update receipt preview with transaction details
+    function updateReceiptPreview(transaction) {
+      const date = new Date(transaction.date);
+      const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+      
+      document.getElementById('receiptTxnId').textContent = transaction.id;
+      document.getElementById('receiptDateTime').textContent = formattedDate;
+      document.getElementById('receiptFrom').textContent = transaction.fromAccount.name;
+      document.getElementById('receiptTo').textContent = transaction.toAccount.name || transaction.toAccount.name;
+      document.getElementById('receiptBank').textContent = transaction.bank || 'RBC Royal Bank';
+      document.getElementById('receiptAccount').textContent = '****' + (transaction.accountNumber ? transaction.accountNumber.slice(-4) : transaction.fromAccount.number.slice(-4));
+      document.getElementById('receiptAmount').textContent = '$' + transaction.amount.toFixed(2);
+      document.getElementById('receiptFee').textContent = '$' + transaction.fee.toFixed(2);
+      document.getElementById('receiptTotal').textContent = '$' + transaction.total.toFixed(2);
+      document.getElementById('receiptDesc').textContent = transaction.description;
+      document.getElementById('receiptNewBalance').textContent = '$' + (transaction.fromAccount.balance - transaction.total).toFixed(2);
+    }
+
+    // Process deposit
+    function processDeposit() {
+      const amount = parseFloat(document.getElementById('depositAmount').value);
+      const toAccount = document.getElementById('depositToAccount').value || currentAccount;
+      const description = document.getElementById('depositDescription').value || 'Deposit';
+      
+      if (!amount || amount <= 0) {
+        showError('Please enter a valid amount');
+        return;
+      }
+      
+      if (typeof window.depositMoney === 'function') {
+        const result = window.depositMoney(toAccount, amount, description);
+        
+        if (result.success) {
+          showSuccess(`Deposit of $${amount.toFixed(2)} completed`);
+          updateAccountDisplay();
+          updateDepositSummary();
+          
+          document.getElementById('depositAmount').value = '';
+          document.getElementById('depositDescription').value = '';
+          
+          // Update notification badge
+          if (typeof window.updateNotificationBadge === 'function') {
+            window.updateNotificationBadge();
+          }
+        } else {
+          showError(result.error || 'Deposit failed');
+        }
+      } else {
+        // Fallback if data.js functions not available
+        accounts[toAccount].balance += amount;
+        
+        showSuccess(`Deposit of $${amount.toFixed(2)} completed`);
+        updateAccountDisplay();
+        updateDepositSummary();
+        
+        document.getElementById('depositAmount').value = '';
+        document.getElementById('depositDescription').value = '';
+      }
+    }
+
+    // Download PDF Receipt with enhanced information
+    function downloadReceipt() {
+      if (!currentTransaction) return;
+      
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      // Set colors
+      const primaryColor = [0, 102, 179]; // RBC Blue
+      const secondaryColor = [10, 37, 64]; // Dark blue
+      
+      // Header
+      doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      doc.rect(0, 0, 210, 40, 'F');
+      
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(20);
+      doc.setFont('helvetica', 'bold');
+      doc.text('RBC Royal Bank', 105, 20, { align: 'center' });
+      
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Official Transfer Receipt', 105, 30, { align: 'center' });
+      
+      // Transaction ID and Date
+      doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
+      doc.setFontSize(10);
+      doc.text(`Transaction ID: ${currentTransaction.id}`, 20, 50);
+      doc.text(`Date: ${currentTransaction.date.toLocaleDateString()}`, 20, 57);
+      doc.text(`Time: ${currentTransaction.date.toLocaleTimeString()}`, 20, 64);
+      
+      // Line
+      doc.setDrawColor(200, 200, 200);
+      doc.line(20, 70, 190, 70);
+      
+      // Sender Information
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Sender Information:', 20, 80);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Name: ${currentTransaction.fromAccount.name}`, 20, 87);
+      doc.text(`Account: ${currentTransaction.fromAccount.number}`, 20, 94);
+      doc.text(`Balance before transfer: $${(currentTransaction.fromAccount.balance + currentTransaction.total).toLocaleString()}`, 20, 101);
+      
+      // Recipient Information
+      doc.setFont('helvetica', 'bold');
+      doc.text('Recipient Information:', 20, 115);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Name: ${currentTransaction.toAccount.name || currentTransaction.toAccount.name}`, 20, 122);
+      doc.text(`Bank: ${currentTransaction.bank || 'RBC Royal Bank'}`, 20, 129);
+      
+      if (currentTransaction.type === 'internal') {
+        doc.text(`Account: ${currentTransaction.toAccount.number}`, 20, 136);
+      } else {
+        doc.text(`Account: ****${currentTransaction.accountNumber.slice(-4)}`, 20, 136);
+      }
+      
+      // Transaction Details
+      doc.setFont('helvetica', 'bold');
+      doc.text('Transaction Details:', 120, 115);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Amount: $${currentTransaction.amount.toFixed(2)}`, 120, 122);
+      doc.text(`Fee: $${currentTransaction.fee.toFixed(2)}`, 120, 129);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      doc.text(`Total: $${currentTransaction.total.toFixed(2)}`, 120, 136);
+      
+      // Description
+      doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Description:', 20, 150);
+      doc.setFont('helvetica', 'normal');
+      doc.text(currentTransaction.description, 20, 157);
+      
+      // New Balance
+      doc.setFont('helvetica', 'bold');
+      doc.text('New Balance:', 20, 170);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`$${(currentTransaction.fromAccount.balance).toLocaleString()}`, 20, 177);
+      
+      // Footer
+      doc.setFillColor(240, 247, 255);
+      doc.rect(0, 260, 210, 40, 'F');
+      
+      doc.setFontSize(8);
+      doc.setTextColor(100, 100, 100);
+      doc.text('This is an official electronic receipt. For questions, please contact RBC Customer Service at 1-800-769-2511.', 105, 270, { align: 'center' });
+      doc.text('Transaction reference: ' + currentTransaction.id, 105, 277, { align: 'center' });
+      doc.text('© RBC Royal Bank. All rights reserved.', 105, 284, { align: 'center' });
+      
+      // Save PDF
+      doc.save(`RBC_Receipt_${currentTransaction.id}.pdf`);
+    }
+
+    // Show error message
+    function showError(message) {
+      const errorEl = document.getElementById('errorMessage');
+      errorEl.textContent = message;
+      errorEl.classList.add('show');
+      setTimeout(() => errorEl.classList.remove('show'), 3000);
+    }
+
+    // Show success message
+    function showSuccess(message) {
+      const successEl = document.getElementById('successMessage');
+      successEl.textContent = message;
+      successEl.classList.add('show');
+      setTimeout(() => successEl.classList.remove('show'), 3000);
+    }
+
+    // Close modal and return to dashboard
+    function closeModalAndReturn() {
+      document.getElementById('modalOverlay').classList.remove('active');
+      document.getElementById('successModal').classList.remove('active');
+      window.location.href = 'dashboard.html';
+    }
+  </script>
+</body>
+</html>

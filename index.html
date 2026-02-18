@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>RBC Royal Bank • Secure Sign In</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #eef5fc 0%, #dbeafe 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        /* main card container — subtle shadow, blue-white scheme */
+        .login-card {
+            max-width: 440px;
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -10px rgba(0, 53, 102, 0.25), 0 0 0 1px rgba(0, 102, 178, 0.08);
+            padding: 2.5rem 2rem 2.8rem 2rem;
+            transition: all 0.2s ease;
+        }
+
+        /* RBC‑style header with wordmark */
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2.2rem;
+        }
+
+        .logo-icon {
+            background-color: #0066b3;   /* RBC deep blue */
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 102, 179, 0.2);
+        }
+
+        .logo-icon svg {
+            width: 26px;
+            height: 26px;
+            fill: white;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 500;
+            letter-spacing: -0.02em;
+            color: #0a2540;
+        }
+
+        .logo-text span {
+            font-weight: 300;
+            color: #0066b3;
+        }
+
+        .logo-text .reg {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #4d6a8f;
+            margin-left: 0.2rem;
+            vertical-align: super;
+            font-size: 0.7rem;
+        }
+
+        /* simple greeting line */
+        .greeting {
+            color: #1e3a5f;
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+            border-left: 3px solid #0066b3;
+            padding-left: 0.85rem;
+            background: rgba(0, 102, 179, 0.02);
+            line-height: 1.4;
+        }
+
+        /* input groups */
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            color: #34597e;
+            margin-bottom: 0.3rem;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            font-size: 1rem;
+            border: 1px solid #cad9ed;
+            border-radius: 18px;
+            background-color: #f9fcff;
+            transition: border 0.2s, box-shadow 0.2s;
+            color: #0b2b44;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #0066b3;
+            box-shadow: 0 0 0 4px rgba(0, 102, 179, 0.15);
+            background-color: #ffffff;
+        }
+
+        /* error message styling */
+        .error-message {
+            background-color: #ffeeed;
+            border-left: 4px solid #c93f3f;
+            color: #a42d2d;
+            padding: 0.9rem 1.2rem;
+            border-radius: 18px;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 2px 8px rgba(201, 63, 63, 0.08);
+        }
+
+        .error-message svg {
+            width: 20px;
+            height: 20px;
+            fill: #c93f3f;
+            flex-shrink: 0;
+        }
+
+        .error-hidden {
+            display: none;
+        }
+
+        /* sign in button */
+        .signin-btn {
+            background-color: #0066b3;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 1rem 1.2rem;
+            border: none;
+            border-radius: 40px;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
+            box-shadow: 0 12px 20px -15px #0066b3, 0 4px 8px rgba(0, 102, 179, 0.2);
+            letter-spacing: 0.3px;
+            margin: 0.8rem 0 1.8rem 0;
+        }
+
+        .signin-btn:hover {
+            background-color: #004e8c;
+            box-shadow: 0 14px 24px -12px #004377;
+        }
+
+        .signin-btn:active {
+            transform: scale(0.99);
+            background-color: #003f70;
+        }
+
+        /* links row (forgot password + register) */
+        .links-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 0.95rem;
+            border-top: 1px solid #dde7f0;
+            padding-top: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .link-item {
+            color: #1e4668;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+        }
+
+        .link-item:hover {
+            color: #0066b3;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        .register-link {
+            font-weight: 600;
+            background: #ecf3fa;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+        }
+
+        .register-link:hover {
+            background: #dde9f5;
+            text-decoration: none;
+            color: #00315c;
+        }
+
+        /* subtle security note */
+        .security-note {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: #54718f;
+            background: #f1f7fd;
+            padding: 0.8rem 1rem;
+            border-radius: 40px;
+        }
+
+        .security-note svg {
+            width: 18px;
+            height: 18px;
+            fill: #0066b3;
+            flex-shrink: 0;
+        }
+
+        /* small adjustments for mobile */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 1.8rem 1.5rem 2.2rem 1.5rem;
+                border-radius: 28px;
+            }
+
+            .logo-text {
+                font-size: 1.6rem;
+            }
+
+            .links-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .register-link {
+                align-self: flex-start;
+            }
+
+            .greeting {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <!-- RBC‑style logo area -->
+        <div class="logo-area">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14h-2v-6h2v6zm4 0h-2v-6h2v6z"/>
+                </svg>
+            </div>
+            <div class="logo-text">
+                Royal Bank <span>of Canada</span><span class="reg">®</span>
+            </div>
+        </div>
+
+        <!-- subtle welcome / security context -->
+        <div class="greeting">
+            ⚡ Secure sign in. Your online banking is protected.
+        </div>
+
+        <!-- error message container (hidden by default) -->
+        <div id="errorMessage" class="error-message error-hidden">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+            <span id="errorText">Incorrect username or password. Please try again.</span>
+        </div>
+
+        <!-- form with validation (no default values) -->
+        <form id="loginForm" onsubmit="event.preventDefault(); validateAndSubmit();">
+            <!-- username field - no default value -->
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input class="input-field" type="text" id="username" name="username" placeholder="Enter your username" autocomplete="off">
+            </div>
+
+            <!-- password field - no default value -->
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input class="input-field" type="password" id="password" name="password" placeholder="········">
+            </div>
+
+            <!-- bold blue sign in button -->
+            <button class="signin-btn" type="submit">Sign In</button>
+        </form>
+
+        <!-- forgot password / register links -->
+        <div class="links-row">
+            <a href="#" class="link-item" onclick="alert('Demo: password reset flow (mock)'); return false;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e4668" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                </svg>
+                Forgot password?
+            </a>
+            <a href="#" class="link-item register-link" onclick="alert('Demo: new registration (mock)'); return false;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e4668" stroke-width="2" stroke-linecap="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                Register
+            </a>
+        </div>
+
+        <!-- extra trust element -->
+        <div class="security-note">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+                <path d="M12 11h4v2h-4v-2z" fill="#ffffff"/>
+            </svg>
+            <span>Protected by multi‑factor authentication & 256‑bit encryption</span>
+        </div>
+    </div>
+
+    <script>
+        // Simple validation function to check hardcoded credentials
+        function validateAndSubmit() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('errorMessage');
+
+            // Hardcoded correct credentials (as per original request, but hidden)
+            const validUsername = 'Carolyn001';
+            const validPassword = 'carmatt@00';
+
+            // Check if both fields match the expected values
+            if (username === validUsername && password === validPassword) {
+                // Hide error if it was visible
+                errorDiv.classList.add('error-hidden');
+                
+                // 🔥 REDIRECT TO DASHBOARD.HTML
+                window.location.href = 'dashboard.html';
+                
+            } else {
+                // Show error message
+                errorDiv.classList.remove('error-hidden');
+                
+                // Optional: add a little shake effect to draw attention
+                const loginCard = document.querySelector('.login-card');
+                loginCard.style.transform = 'translateX(-2px)';
+                setTimeout(() => loginCard.style.transform = 'translateX(2px)', 50);
+                setTimeout(() => loginCard.style.transform = 'translateX(-2px)', 100);
+                setTimeout(() => loginCard.style.transform = 'translateX(0)', 150);
+            }
+        }
+
+        // Hide error when user starts typing (optional UX improvement)
+        document.getElementById('username').addEventListener('input', function() {
+            document.getElementById('errorMessage').classList.add('error-hidden');
+        });
+        document.getElementById('password').addEventListener('input', function() {
+            document.getElementById('errorMessage').classList.add('error-hidden');
+        });
+    </script>
+</body>
+</html>

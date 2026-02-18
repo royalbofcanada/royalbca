@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>RBC Royal Bank · Deposit</title>
+  <!-- Font & icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    /* Light Mode (Default) */
+    body.light-mode {
+      background: #f2f5f9;
+    }
+
+    body.light-mode .app-container {
+      background: white;
+    }
+
+    body.light-mode .app-header {
+      background: linear-gradient(135deg, #0a2540 0%, #1a3a5f 100%);
+    }
+
+    body.light-mode .bottom-nav {
+      background: rgba(255,255,255,0.95);
+      border-top: 1px solid rgba(0,102,179,0.1);
+    }
+
+    body.light-mode .section-header h3,
+    body.light-mode h2,
+    body.light-mode .method-title,
+    body.light-mode .account-card-title,
+    body.light-mode .deposit-amount {
+      color: #0a2540;
+    }
+
+    body.light-mode .section-header a,
+    body.light-mode .method-subtitle,
+    body.light-mode .account-card-subtitle,
+    body.light-mode .input-label,
+    body.light-mode .deposit-header p,
+    body.light-mode .info-note {
+      color: #4f6f95;
+    }
+
+    body.light-mode .method-card {
+      background: white;
+      border-color: #eef4fc;
+    }
+
+    body.light-mode .method-icon {
+      background: #f0f7ff;
+      color: #0066b3;
+    }
+
+    /* Dark Mode */
+    body.dark-mode {
+      background: #121212;
+    }
+
+    body.dark-mode .app-container {
+      background: #1e1e1e;
+    }
+
+    body.dark-mode .app-header {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+    }
+
+    body.dark-mode .bottom-nav {
+      background: rgba(30,30,30,0.95);
+      border-top: 1px solid #404040;
+    }
+
+    body.dark-mode .nav-item-bottom {
+      color: #b0b0b0;
+    }
+
+    body.dark-mode .nav-item-bottom.active {
+      color: #66b0ff;
+    }
+
+    body.dark-mode .section-header h3,
+    body.dark-mode h2,
+    body.dark-mode .method-title,
+    body.dark-mode .account-card-title,
+    body.dark-mode .deposit-amount,
+    body.dark-mode .deposit-header h1,
+    body.dark-mode .greeting-text h1 {
+      color: #ffffff !important;
+    }
+
+    body.dark-mode .section-header a,
+    body.dark-mode .method-subtitle,
+    body.dark-mode .account-card-subtitle,
+    body.dark-mode .input-label,
+    body.dark-mode .deposit-header p,
+    body.dark-mode .info-note,
+    body.dark-mode .greeting-text h2 {
+      color: #b0b0b0 !important;
+    }
+
+    body.dark-mode .method-card {
+      background: #2d2d2d;
+      border-color: #404040;
+    }
+
+    body.dark-mode .method-icon {
+      background: #3d3d3d;
+      color: #66b0ff;
+    }
+
+    body.dark-mode .input-field {
+      background: #3d3d3d;
+      border-color: #555;
+      color: white;
+    }
+
+    body.dark-mode .deposit-btn {
+      background: #0066b3;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 450px;
+      position: relative;
+      height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      box-shadow: 0 0 40px rgba(0,0,0,0.1);
+      scroll-behavior: smooth;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .app-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .app-header {
+      padding: 20px 24px 20px;
+      color: white;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .greeting {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #0066b3, #0095ff);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 600;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      cursor: pointer;
+      color: white;
+    }
+
+    .greeting-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .greeting-text h2 {
+      font-size: 14px;
+      font-weight: 400;
+      opacity: 0.9;
+      margin: 0;
+    }
+
+    .greeting-text h1 {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .back-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+
+    .deposit-header {
+      padding: 0 24px 20px;
+    }
+
+    .deposit-header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .deposit-header p {
+      font-size: 14px;
+    }
+
+    /* Account selector (similar to bills page) */
+    .account-selector {
+      margin: 8px 24px 24px;
+      padding: 16px 20px;
+      background: #f8fbff;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+
+    body.dark-mode .account-selector {
+      background: #2a2a2a;
+    }
+
+    .account-selector-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .account-icon-small {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #0066b3, #0095ff);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+    }
+
+    .account-selector-info h4 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .account-selector-info p {
+      font-size: 13px;
+      color: #4f6f95;
+    }
+
+    body.dark-mode .account-selector-info p {
+      color: #b0b0b0;
+    }
+
+    /* Deposit methods grid */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      margin-bottom: 16px;
+    }
+
+    .section-header h3 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .methods-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      padding: 0 24px;
+      margin-bottom: 30px;
+    }
+
+    .method-card {
+      border-radius: 24px;
+      padding: 20px 16px;
+      border: 1px solid;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .method-card:hover {
+      transform: translateY(-5px);
+      border-color: #0066b3;
+    }
+
+    .method-icon {
+      width: 48px;
+      height: 48px;
+      background: #f0f7ff;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0066b3;
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+
+    .method-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .method-subtitle {
+      font-size: 13px;
+    }
+
+    /* Quick deposit amount chips */
+    .amount-chips {
+      display: flex;
+      gap: 12px;
+      padding: 0 24px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      background: #f0f7ff;
+      padding: 12px 20px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    body.dark-mode .chip {
+      background: #3d3d3d;
+      color: #e0e0e0;
+    }
+
+    .chip:hover {
+      background: #0066b3;
+      color: white;
+    }
+
+    /* Deposit form */
+    .deposit-form {
+      background: #f8faff;
+      margin: 16px 24px 30px;
+      padding: 24px;
+      border-radius: 30px;
+    }
+
+    body.dark-mode .deposit-form {
+      background: #2a2a2a;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-label {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 16px 18px;
+      border: 1px solid #e0e7f0;
+      border-radius: 20px;
+      font-size: 16px;
+      background: white;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: #0066b3;
+    }
+
+    .info-note {
+      font-size: 13px;
+      margin: 16px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .deposit-btn {
+      background: #0066b3;
+      color: white;
+      border: none;
+      width: 100%;
+      padding: 18px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .deposit-btn:hover {
+      background: #004b8f;
+    }
+
+    /* Mobile cheque capture preview */
+    .cheque-preview {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: #f0f7ff;
+      padding: 16px 20px;
+      border-radius: 20px;
+      margin: 24px 24px 30px;
+      cursor: pointer;
+    }
+
+    body.dark-mode .cheque-preview {
+      background: #3d3d3d;
+    }
+
+    .cheque-icon {
+      width: 56px;
+      height: 56px;
+      background: #0066b3;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 28px;
+    }
+
+    .cheque-text h4 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .cheque-text p {
+      font-size: 13px;
+      color: #4f6f95;
+    }
+
+    body.dark-mode .cheque-text p {
+      color: #b0b0b0;
+    }
+
+    /* Recent deposits list */
+    .deposits-list {
+      padding: 0 24px;
+      margin: 24px 0 30px;
+    }
+
+    .deposit-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px solid #eef4fc;
+    }
+
+    body.dark-mode .deposit-item {
+      border-bottom-color: #404040;
+    }
+
+    .deposit-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .deposit-item-icon {
+      width: 48px;
+      height: 48px;
+      background: #f0f7ff;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0066b3;
+      font-size: 20px;
+    }
+
+    .deposit-item-details h4 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .deposit-item-details p {
+      font-size: 13px;
+      margin-top: 4px;
+      color: #4f6f95;
+    }
+
+    body.dark-mode .deposit-item-details p {
+      color: #b0b0b0;
+    }
+
+    .deposit-amount {
+      font-weight: 700;
+      font-size: 18px;
+      color: #006b47;
+    }
+
+    .bottom-nav {
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 20px 25px;
+      box-shadow: 0 -5px 30px rgba(0,0,0,0.05);
+      z-index: 1000;
+    }
+
+    .nav-item-bottom {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      flex: 1;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .nav-item-bottom i {
+      font-size: 22px;
+    }
+
+    .nav-item-bottom span {
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .nav-item-bottom.active {
+      color: #0066b3;
+    }
+  </style>
+</head>
+<body class="light-mode">
+  <div class="app-container">
+    <!-- Header with back navigation -->
+    <div class="app-header">
+      <div class="header-top">
+        <a href="dashboard.html" class="back-link" style="color: white; font-size: 24px; margin-bottom: 0;">
+          <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="greeting">
+          <div class="avatar" onclick="window.location.href='profile.html'">C</div>
+          <div class="greeting-text">
+            <h2>Welcome back,</h2>
+            <h1>Carolyn</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page Title -->
+    <div class="deposit-header">
+      <h1><i class="fas fa-arrow-down" style="color: #0066b3;"></i> Deposit</h1>
+      <p>Add money to your account</p>
+    </div>
+
+    <!-- Target account (where money will go) -->
+    <div class="account-selector" onclick="alert('Change deposit account (demo)')">
+      <div class="account-selector-left">
+        <div class="account-icon-small"><i class="fas fa-piggy-bank"></i></div>
+        <div class="account-selector-info">
+          <h4>Chequing</h4>
+          <p>•••• 4580 · Balance $12,340.00 CAD</p>
+        </div>
+      </div>
+      <i class="fas fa-chevron-down" style="color: #0066b3;"></i>
+    </div>
+
+    <!-- Deposit methods -->
+    <div class="section-header">
+      <h3>Deposit methods</h3>
+    </div>
+
+    <div class="methods-grid">
+      <div class="method-card" onclick="alert('Mobile cheque deposit')">
+        <div class="method-icon"><i class="fas fa-camera"></i></div>
+        <div class="method-title">Mobile cheque</div>
+        <div class="method-subtitle">Snap a photo</div>
+      </div>
+      <div class="method-card" onclick="alert('Interac e-Transfer')">
+        <div class="method-icon"><i class="fas fa-envelope"></i></div>
+        <div class="method-title">Interac e-Transfer</div>
+        <div class="method-subtitle">Receive money</div>
+      </div>
+      <div class="method-card" onclick="alert('Wire transfer')">
+        <div class="method-icon"><i class="fas fa-globe"></i></div>
+        <div class="method-title">Wire transfer</div>
+        <div class="method-subtitle">Domestic/International</div>
+      </div>
+      <div class="method-card" onclick="alert('Cash at ATM')">
+        <div class="method-icon"><i class="fas fa-money-bill"></i></div>
+        <div class="method-title">Cash/ATM</div>
+        <div class="method-subtitle">Find nearest branch</div>
+      </div>
+    </div>
+
+    <!-- Quick amount chips (for fast deposit) -->
+    <div class="section-header">
+      <h3>Quick amounts</h3>
+    </div>
+    <div class="amount-chips">
+      <div class="chip" onclick="document.getElementById('depositAmount').value='100'">$100</div>
+      <div class="chip" onclick="document.getElementById('depositAmount').value='200'">$200</div>
+      <div class="chip" onclick="document.getElementById('depositAmount').value='500'">$500</div>
+      <div class="chip" onclick="document.getElementById('depositAmount').value='1000'">$1000</div>
+    </div>
+
+    <!-- Deposit form (manual entry) -->
+    <div class="deposit-form">
+      <div style="font-weight: 700; font-size: 18px; margin-bottom: 20px;">Enter deposit details</div>
+      
+      <div class="input-group">
+        <div class="input-label">FROM (SOURCE)</div>
+        <select class="input-field" style="appearance: none;">
+          <option>External bank account (•••• 3312)</option>
+          <option>Interac e-Transfer</option>
+          <option>Wire transfer</option>
+          <option>Cash deposit at branch</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">AMOUNT (CAD)</div>
+        <input class="input-field" type="number" id="depositAmount" placeholder="0.00" value="250.00">
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">DATE (optional)</div>
+        <input class="input-field" type="date" value="2026-02-20">
+      </div>
+
+      <div class="info-note">
+        <i class="fas fa-info-circle" style="color: #0066b3;"></i> Deposits may take 1-3 business days to appear.
+      </div>
+
+      <button class="deposit-btn" onclick="alert('Deposit initiated')">Continue deposit</button>
+    </div>
+
+    <!-- Mobile cheque deposit preview (eye-catching) -->
+    <div class="cheque-preview" onclick="alert('Launch mobile cheque capture')">
+      <div class="cheque-icon"><i class="fas fa-camera-retro"></i></div>
+      <div class="cheque-text">
+        <h4>Deposit a cheque by photo</h4>
+        <p>Use your camera · No fee · Instant credit</p>
+      </div>
+      <i class="fas fa-arrow-right" style="color: #0066b3; margin-left: auto;"></i>
+    </div>
+
+    <!-- Recent deposits -->
+    <div class="section-header">
+      <h3>Recent deposits</h3>
+      <a onclick="alert('View all deposits')">View all <i class="fas fa-chevron-right"></i></a>
+    </div>
+
+    <div class="deposits-list">
+      <div class="deposit-item">
+        <div class="deposit-left">
+          <div class="deposit-item-icon"><i class="fas fa-mobile-alt"></i></div>
+          <div class="deposit-item-details">
+            <h4>Interac e-Transfer</h4>
+            <p>From Jamie L. · May 12</p>
+          </div>
+        </div>
+        <div class="deposit-amount">+$50.00</div>
+      </div>
+      <div class="deposit-item">
+        <div class="deposit-left">
+          <div class="deposit-item-icon"><i class="fas fa-camera"></i></div>
+          <div class="deposit-item-details">
+            <h4>Mobile cheque</h4>
+            <p>Chq #104 · May 10</p>
+          </div>
+        </div>
+        <div class="deposit-amount">+$1,200.00</div>
+      </div>
+      <div class="deposit-item">
+        <div class="deposit-left">
+          <div class="deposit-item-icon"><i class="fas university"></i></div>
+          <div class="deposit-item-details">
+            <h4>Wire transfer</h4>
+            <p>From RBC US · May 5</p>
+          </div>
+        </div>
+        <div class="deposit-amount">+$3,500.00</div>
+      </div>
+    </div>
+
+    <!-- Sticky Bottom Navigation (same as dashboard) -->
+    <div class="bottom-nav">
+      <a class="nav-item-bottom" data-page="dashboard" href="dashboard.html">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </a>
+      <a class="nav-item-bottom" data-page="cards" href="cards.html">
+        <i class="fas fa-credit-card"></i>
+        <span>Cards</span>
+      </a>
+      <a class="nav-item-bottom" data-page="insights" href="insights.html">
+        <i class="fas fa-chart-line"></i>
+        <span>Insights</span>
+      </a>
+      <a class="nav-item-bottom active" data-page="deposit" href="deposit.html">
+        <i class="fas fa-arrow-down"></i>
+        <span>Deposit</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Dark mode sync script -->
+  <script>
+    (function() {
+      // Check if dark mode was enabled on dashboard (simple localStorage flag)
+      const isDark = localStorage.getItem('rbc_dark_mode') === 'true';
+      if (isDark) {
+        document.body.classList.remove('light-mode');
+        document.body.classList.add('dark-mode');
+      }
+      
+      // Listen for dark mode changes from other tabs/pages
+      window.addEventListener('storage', function(e) {
+        if (e.key === 'rbc_dark_mode') {
+          if (e.newValue === 'true') {
+            document.body.classList.remove('light-mode');
+            document.body.classList.add('dark-mode');
+          } else {
+            document.body.classList.remove('dark-mode');
+            document.body.classList.add('light-mode');
+          }
+        }
+      });
+
+      // Set active nav for deposit page
+      document.querySelectorAll('.nav-item-bottom').forEach(item => {
+        if (item.dataset.page === 'deposit') {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
